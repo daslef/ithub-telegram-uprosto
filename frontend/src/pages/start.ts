@@ -1,14 +1,25 @@
+import sheepImg from '../assets/closeup-shot-sheep.avif'
+import { renderPage } from '../router'
+
 export default function StartPage() {
-    return `<div class="Main">
-        <h1>Тестовое приложение</h1>
-        <img src="./src/assets/closeup-shot-sheep.avif" alt="sheep photo" class="main-image">
-        <p></p>
-        <button class="btn f-btn">Тест отправки данных</button>
-    </div>
-    <form class="test-form">
-        <input type="text" placeholder="Введите заголовок" class="title-inp">
-        <input type="text" placeholder="Введите описание" class="desc-inp">
-        <input type="text" placeholder="Введите текст" class="text-inp">
-        <button class="btn s-btn">Отправить</button>
-    </form>`
+    const divElement = document.createElement('div')
+    divElement.className = 'Main'
+
+    const h1Element = document.createElement('h1')
+    h1Element.textContent = 'Стартовая'
+
+    const imgElement = document.createElement('img')
+    imgElement.className = 'main-image'
+    imgElement.src = sheepImg
+
+    const buttonElement = document.createElement('button')
+    buttonElement.classList.add('btn', 'f-btn')
+    buttonElement.textContent = 'Тест отправки'
+    buttonElement.addEventListener('click', () => {
+        renderPage('form')
+    })
+
+    divElement.append(h1Element, imgElement, buttonElement)
+
+    return divElement
 }

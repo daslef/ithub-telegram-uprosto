@@ -40,7 +40,7 @@ img {
 }
 
 form {
-    display: none;
+    display: block;
     text-align: center;
 }
 
