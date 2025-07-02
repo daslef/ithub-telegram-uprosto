@@ -1,4 +1,19 @@
+import StartPage from "./pages/start";
+import EndPage from "./pages/end";
+
+function renderPage(page: string) {
+    if (app) {
+        app.innerHTML = page === 'start' ? StartPage() : EndPage()
+    }
+}
+
+
 const tg = (window as any).Telegram.WebApp;
+
+const app = document.querySelector('#app')
+
+renderPage('start')
+
 
 const fBtn = document.querySelector(".f-btn") as HTMLButtonElement
 const sBtn = document.querySelector(".s-btn") as HTMLButtonElement
@@ -23,4 +38,5 @@ sBtn.addEventListener("click", () => {
     }
 
     tg.sendData(JSON.stringify(data));
+    renderPage('end')
 });

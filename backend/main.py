@@ -10,13 +10,13 @@ from aiogram.enums.parse_mode import ParseMode
 
 logging.basicConfig(level=logging.INFO)
 
-bot = Bot("692281482:AAHQyT9X74LsHGHA1UixXEBX8OwN2TqXQwM")
+bot = Bot("8140513380:AAHTFVRAMc-38YiCBVk13yD4VMITTmIhwaU")
 dp = Dispatcher()
 
 
 @dp.message(CommandStart())
 async def start(message: types.Message):
-    webAppInfo = types.WebAppInfo(url="your-webapp-url")
+    webAppInfo = types.WebAppInfo(url="https://byblik-c-malinoy.github.io/telegram-webapp-starter/")
     builder = ReplyKeyboardBuilder()
     builder.add(types.KeyboardButton(text="Отправить данные", web_app=webAppInfo))
 
