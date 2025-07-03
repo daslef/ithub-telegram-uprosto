@@ -19,7 +19,7 @@ export default function StartPage() {
 
     for (const {category} of categories) {
         const buttonElement = document.createElement('button')
-        buttonElement.classList.add('btn', 'f-btn')
+        buttonElement.classList.add('category')
         buttonElement.textContent = category
         buttonElement.addEventListener('click', () => {
             renderPage('form', category)

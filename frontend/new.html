@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Электронный навигатор фестиваля</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
@@ -21,24 +21,23 @@
 
         <h3>Выберите интересующие вас категории (заполнено: <span id="selected-count">0</span>/9)</h3>
         <div class="categories">
-            <div class="category" onclick="openModal('Дошкольное развитие')">ДОШКОЛЬНОЕ РАЗВИТИЕ</div>
-            <div class="category" onclick="openModal('Спорт')">СПОРТ</div>
-            <div class="category" onclick="openModal('Общее образование')">ОБЩЕЕ ОБРАЗОВАНИЕ</div>
-            <div class="category" onclick="openModal('Творчество')">ТВОРЧЕСТВО</div>
-            <div class="category" onclick="openModal('IT')">IT</div>
-            <div class="category" onclick="openModal('Профессия')">ПРОФЕССИЯ</div>
-            <div class="category" onclick="openModal('Языки')">ЯЗЫКИ</div>
-            <div class="category" onclick="openModal('Наука')">НАУКА</div>
-            <div class="category" onclick="openModal('Развитие личности')">РАЗВИТИЕ ЛИЧНОСТИ</div>
+            <div class="category" data-category="preschool">ДОШКОЛЬНОЕ РАЗВИТИЕ</div>
+            <div class="category" data-category="sport">СПОРТ</div>
+            <div class="category" data-category="education">ОБЩЕЕ ОБРАЗОВАНИЕ</div>
+            <div class="category" data-category="creativity">ТВОРЧЕСТВО</div>
+            <div class="category" data-category="it">IT</div>
+            <div class="category" data-category="profession">ПРОФЕССИЯ</div>
+            <div class="category" data-category="languages">ЯЗЫКИ</div>
+            <div class="category" data-category="science">НАУКА</div>
+            <div class="category" data-category="personal">РАЗВИТИЕ ЛИЧНОСТИ</div>
         </div>
 
         <div class="buttons">
-            <button onclick="formPuzzle()">Сформировать пазл</button>
-            <button onclick="openRaffleModal()">Принять участие в розыгрыше</button>
+            <button id="generate-puzzle" class="btn btn-primary">Сформировать пазл</button>
+            <button id="participate-raffle" class="btn btn-secondary" disabled="">Учавствовать в розыгрыше</button>
         </div>
     </div>
 
-    <!-- Modal for selecting organizations -->
     <div id="orgModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('orgModal')">×</span>
@@ -55,7 +54,6 @@
         </div>
     </div>
 
-    <!-- Modal for raffle participation -->
     <div id="raffleModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('raffleModal')">×</span>

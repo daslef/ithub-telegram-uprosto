@@ -209,7 +209,7 @@ export const categories = [
 
     {
         id: "category_6",
-        category: "IT",
+        category: "Профессия",
         items: [{
             id: "category_6_item_1",
             title: "Центр профориентации «Выбор»",
