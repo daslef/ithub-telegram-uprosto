@@ -10,10 +10,19 @@ export default function FormPage(categoryName: string) {
 
     const divElement = document.createElement('div')
     for (const item of categoryData!.items) {
+        const wrapperElement = document.createElement('section')
+        wrapperElement.className = ''
+
+
         const inputElement = document.createElement('input')
         inputElement.className = 'title-inp'
-        inputElement.placeholder = item.title
-        divElement.appendChild(inputElement)
+        inputElement.type = 'checkbox'
+
+        const labelElement = document.createElement('label')
+        labelElement.textContent = item.title
+
+        wrapperElement.append(inputElement, labelElement)
+        divElement.appendChild(wrapperElement)
     }
 
 
@@ -33,7 +42,7 @@ export default function FormPage(categoryName: string) {
         }
 
         tg.sendData(JSON.stringify(data));
-        renderPage('end')
+        renderPage('start')
     });
 
 

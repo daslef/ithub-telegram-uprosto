@@ -1,207 +1,16 @@
-<!DOCTYPE html>Add commentMore actions
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Фестиваль образования - Собери свой пазл</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .legend {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 5px solid #3498db;
-        }
-        .puzzle-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        .puzzle-piece {
-            background-color: #3498db;
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            height: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .puzzle-piece:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-        }
-        .puzzle-piece:nth-child(1) { background-color: #e74c3c; } 
-        .puzzle-piece:nth-child(2) { background-color: #2ecc71; }
-        .puzzle-piece:nth-child(3) { background-color: #f39c12; }
-        .puzzle-piece:nth-child(4) { background-color: #9b59b6; }
-        .puzzle-piece:nth-child(5) { background-color: #1abc9c; }
-        .puzzle-piece:nth-child(6) { background-color: #d35400; }
-        .puzzle-piece:nth-child(7) { background-color: #34495e; }
-        .puzzle-piece:nth-child(8) { background-color: #16a085; }
-        .puzzle-piece:nth-child(9) { background-color: #c0392b; } 
-        
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.7);
-            overflow-y: auto;
-        }
-        .modal-content {
-            background-color: white;
-            margin: 5% auto;
-            padding: 25px;
-            border-radius: 10px;
-            width: 80%;
-            max-width: 700px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            position: relative;
-        }
-        .close {
-            position: absolute;
-            right: 20px;
-            top: 10px;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .organization-list {
-            margin-top: 20px;
-        }
-        .organization-item {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .organization-item input {
-            margin-right: 15px;
-        }
-        .not-enough {
-            margin-top: 20px;
-        }
-        .not-enough input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-top: 5px;
-        }
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 30px;
-        }
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-        .btn-primary {
-            background-color: #3498db;
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: #2980b9;
-        }
-        .btn-secondary {
-            background-color: #95a5a6;
-            color: white;
-        }
-        .btn-secondary:hover {
-            background-color: #7f8c8d;
-        }
-        .btn:disabled {
-            background-color: #bdc3c7;
-            cursor: not-allowed;
-        }
-        .progress {
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-        .puzzle-piece.completed {
-            position: relative;
-        }
-        .puzzle-piece.completed::after {
-            content: "✓";
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background-color: white;
-            color: #2ecc71;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-        .initial-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 30px;
-        }
-        .raffle-modal input, .raffle-modal select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .raffle-modal label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-    </style>
+    <title>Электронный навигатор фестиваля</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <h1>Электронный навигатор фестиваля</h1>
         
-        <div class="legend">
+        <div class="game-description">
             <h2>ИГРА: Собери свой образовательный пазл</h2>
             <p>Образование — это пазл. Каждый фрагмент которого отражает определённое направление развития ребёнка. 
             Каждый ребёнок — уникален, и его путь в образовании складывается как пазл из его интересов, опыта, 
@@ -209,63 +18,60 @@
             <p>Собирайте собственную «образовательную картину» из фрагментов, которые отражают те области, 
             что откликаются именно вам. Не обязательно проходить все стенды, можно выбирать только интересные области.</p>
         </div>
-        
-        <div class="progress">Выберите интересующие вас категории (заполнено: <span id="completed-count">0</span>/9)</div>
-        
-        <div class="puzzle-container">
-            <div class="puzzle-piece" data-category="preschool">ДОШКОЛЬНОЕ РАЗВИТИЕ</div>
-            <div class="puzzle-piece" data-category="sport">СПОРТ</div>
-            <div class="puzzle-piece" data-category="education">ОБЩЕЕ ОБРАЗОВАНИЕ</div>
-            <div class="puzzle-piece" data-category="creativity">ТВОРЧЕСТВО</div>
-            <div class="puzzle-piece" data-category="it">IT</div>
-            <div class="puzzle-piece" data-category="profession">ПРОФЕССИЯ</div>
-            <div class="puzzle-piece" data-category="languages">ЯЗЫКИ</div>
-            <div class="puzzle-piece" data-category="science">НАУКА</div>
-            <div class="puzzle-piece" data-category="personal">РАЗВИТИЕ ЛИЧНОСТИ</div>
+
+        <h3>Выберите интересующие вас категории (заполнено: <span id="selected-count">0</span>/9)</h3>
+        <div class="categories">
+            <div class="category" onclick="openModal('Дошкольное развитие')">ДОШКОЛЬНОЕ РАЗВИТИЕ</div>
+            <div class="category" onclick="openModal('Спорт')">СПОРТ</div>
+            <div class="category" onclick="openModal('Общее образование')">ОБЩЕЕ ОБРАЗОВАНИЕ</div>
+            <div class="category" onclick="openModal('Творчество')">ТВОРЧЕСТВО</div>
+            <div class="category" onclick="openModal('IT')">IT</div>
+            <div class="category" onclick="openModal('Профессия')">ПРОФЕССИЯ</div>
+            <div class="category" onclick="openModal('Языки')">ЯЗЫКИ</div>
+            <div class="category" onclick="openModal('Наука')">НАУКА</div>
+            <div class="category" onclick="openModal('Развитие личности')">РАЗВИТИЕ ЛИЧНОСТИ</div>
         </div>
-        
-        <div class="action-buttons">
-            <button id="generate-puzzle" class="btn btn-primary" disabled>Сформировать пазл</button>
-            <button id="participate-raffle" class="btn btn-secondary" disabled>Принять участие в розыгрыше</button>
+
+        <div class="buttons">
+            <button onclick="formPuzzle()">Сформировать пазл</button>
+            <button onclick="openRaffleModal()">Принять участие в розыгрыше</button>
         </div>
     </div>
-    
-    <div id="organization-modal" class="modal">
+
+    <!-- Modal for selecting organizations -->
+    <div id="orgModal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2 id="modal-title">Выберите организации</h2>
+            <span class="close" onclick="closeModal('orgModal')">×</span>
+            <h2>Выберите организации</h2>
             <p>Отметьте до 3 организаций в этой категории</p>
-            
-            <div class="organization-list" id="organization-list">
+            <div class="options">
+                <label><input type="checkbox" name="org"> Организация 1</label>
+                <label><input type="checkbox" name="org"> Организация 2</label>
+                <label><input type="checkbox" name="org"> Организация 3</label>
             </div>
-            
-            <div class="not-enough">
-                <label for="not-enough-input">Не хватило (до 100 символов):</label>
-                <input type="text" id="not-enough-input" maxlength="100" placeholder="Что бы вы хотели добавить в эту категорию?">
-            </div>
-            
-            <button id="save-category" class="btn btn-primary" style="margin-top: 20px;">Сохранить выбор</button>
+            <p>Не хватило (до 100 символов):</p>
+            <textarea placeholder="Ваши предложения"></textarea>
+            <button onclick="saveSelection()">Сохранить выбор</button>
         </div>
     </div>
-    
-    <div id="raffle-modal" class="modal">
-        <div class="modal-content raffle-modal">
-            <span class="close">&times;</span>
+
+    <!-- Modal for raffle participation -->
+    <div id="raffleModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('raffleModal')">×</span>
             <h2>Участие в розыгрыше призов</h2>
-            
-            <div>
-                <label for="raffle-name">Имя:</label>
-                <input type="text" id="raffle-name" required>
+            <div class="form-group">
+                <label for="name">Имя:</label>
+                <input type="text" id="name" placeholder="Введите ваше имя">
             </div>
-            
-            <div>
-                <label for="raffle-phone">Телефон:</label>
-                <input type="tel" id="raffle-phone" required>
+            <div class="form-group">
+                <label for="phone">Телефон:</label>
+                <input type="tel" id="phone" placeholder="Введите ваш телефон">
+Hannah
             </div>
-            
-            <div>
+            <div class="form-group">
                 <label for="raffle-time">Выберите дату и время розыгрыша:</label>
-                <select id="raffle-time" required>
+                <select id="raffle-time">
                     <option value="">-- Выберите время --</option>
                     <option value="day1-1350">День 1 - 13:50</option>
                     <option value="day1-1550">День 1 - 15:50</option>
@@ -275,264 +81,51 @@
                     <option value="day2-1750">День 2 - 17:50</option>
                 </select>
             </div>
-            
-            <button id="submit-raffle" class="btn btn-primary" style="margin-top: 20px;">Отправить</button>
+            <button onclick="submitRaffle()">Отправить</button>
         </div>
     </div>
-    
+
     <script>
-        const organizationsData = {
-            preschool: [
-                "Детский сад «Солнышко»",
-                "Центр подготовки к школе «Умка»",
-                "Клуб «Мама и малыш»",
-                "Логопедический центр «Речецветик»",
-                "Нейроразвивающие занятия «Мозайка»"
-            ],
-            creativity: [
-                "Студия рисования «Акварель»",
-                "Керамическая мастерская «Гончар»",
-                "Театральная студия «Маска»",
-                "Вокальная школа «Голос»",
-                "Балетная школа «Грация»",
-                "Танцевальная студия «Ритм»"
-            ],
-            languages: [
-                "Языковая школа «Полиглот»",
-                "Английский клуб «ABC»",
-                "Французский культурный центр",
-                "Китайский языковой лагерь",
-                "Международная школа «Лингва»"
-            ],
-            sport: [
-                "Футбольная школа «Чемпион»",
-                "Баскетбольный клуб «Олимп»",
-                "Секция плавания «Дельфин»",
-                "Школа единоборств «Самурай»",
-                "Гимнастический центр «Грация»"
-            ],
-            science: [
-                "Математический кружок «Пифагор»",
-                "Физико-химическая лаборатория",
-                "Биологический клуб «Флора»",
-                "Астрономический кружок «Орион»",
-                "Школа робототехники «Техник»"
-            ],
-            personal: [
-                "Центр развития эмоционального интеллекта",
-                "Школа проектной деятельности «Идея»",
-                "Тренинги личностного роста",
-                "Психологический центр «Гармония»",
-                "Курсы по развитию навыков"
-            ],
-            it: [
-                "Школа программирования «Код»",
-                "Курсы робототехники «Роботрек»",
-                "Инженерная школа «Технолог»",
-                "3D моделирование и печать",
-                "Курсы веб-разработки"
-            ],
-            profession: [
-                "Центр профориентации «Выбор»",
-                "Кулинарная школа «Шеф»",
-                "Столярная мастерская «Мастер»",
-                "Модельная школа «Стиль»",
-                "Курсы дизайна «Арт»"
-            ],
-            education: [
-                "Начальная школа «Знайка»",
-                "Средняя школа «Перспектива»",
-                "Старшая школа «Абитуриент»",
-                "Центр подготовки к ЕГЭ «Экзамен»",
-                "Образовательный проект «Знание»"
-            ]
-        };
-        
-        const userChoices = {
-            preschool: { selected: [], comment: "" },
-            creativity: { selected: [], comment: "" },
-            languages: { selected: [], comment: "" },
-            sport: { selected: [], comment: "" },
-            science: { selected: [], comment: "" },
-            personal: { selected: [], comment: "" },
-            it: { selected: [], comment: "" },
-            profession: { selected: [], comment: "" },
-            education: { selected: [], comment: "" }
-        };
-        
-        let currentCategory = null;
-        
-        const puzzlePieces = document.querySelectorAll('.puzzle-piece');
-        const organizationModal = document.getElementById('organization-modal');
-        const raffleModal = document.getElementById('raffle-modal');
-        const modalTitle = document.getElementById('modal-title');
-        const organizationList = document.getElementById('organization-list');
-        const notEnoughInput = document.getElementById('not-enough-input');
-        const saveCategoryBtn = document.getElementById('save-category');
-        const generatePuzzleBtn = document.getElementById('generate-puzzle');
-        const participateRaffleBtn = document.getElementById('participate-raffle');
-        const completedCount = document.getElementById('completed-count');
-        const closeButtons = document.querySelectorAll('.close');
-        const submitRaffleBtn = document.getElementById('submit-raffle');
-        
-        puzzlePieces.forEach(piece => {
-            piece.addEventListener('click', function() {
-                const category = this.getAttribute('data-category');
-                currentCategory = category;
-                openOrganizationModal(category);
-            });
-        });
-        
-        function openOrganizationModal(category) {
-            modalTitle.textContent = `Выберите организации: ${getCategoryName(category)}`;
-            
-            organizationList.innerHTML = '';
-            const organizations = organizationsData[category];
-            
-            organizations.forEach(org => {
-                const isSelected = userChoices[category].selected.includes(org);
-                
-                const orgItem = document.createElement('div');
-                orgItem.className = 'organization-item';
-                orgItem.innerHTML = `
-                    <input type="checkbox" id="org-${org}" ${isSelected ? 'checked' : ''}>
-                    <label for="org-${org}">${org}</label>
-                `;
-                
-                const checkbox = orgItem.querySelector('input');
-                checkbox.addEventListener('change', function() {
-                    const checkedBoxes = organizationList.querySelectorAll('input:checked');
-                    if (checkedBoxes.length > 3) {
-                        this.checked = false;
-                        alert('Можно выбрать не более 3 организаций в категории');
-                    }
-                });
-                
-                organizationList.appendChild(orgItem);
-            });
-            
-            notEnoughInput.value = userChoices[category].comment;
-            
-            organizationModal.style.display = 'block';
+        let selectedCategories = [];
+        let selectedCount = 0;
+
+        function openModal(category) {
+            document.getElementById('orgModal').style.display = 'flex';
         }
-        
-        saveCategoryBtn.addEventListener('click', function() {
-            const selectedOrgs = [];
-            const checkboxes = organizationList.querySelectorAll('input:checked');
-            
-            checkboxes.forEach(checkbox => {
-                const label = checkbox.nextElementSibling;
-                selectedOrgs.push(label.textContent);
-            });
-            
-            userChoices[currentCategory].selected = selectedOrgs;
-            userChoices[currentCategory].comment = notEnoughInput.value;
-            
-            updatePuzzlePiece(currentCategory, selectedOrgs.length > 0 || notEnoughInput.value.trim() !== '');
-            
-            organizationModal.style.display = 'none';
-            
-            checkCompletion();
-        });
-        
-        function updatePuzzlePiece(category, isCompleted) {
-            puzzlePieces.forEach(piece => {
-                if (piece.getAttribute('data-category') === category) {
-                    if (isCompleted) {
-                        piece.classList.add('completed');
-                    } else {
-                        piece.classList.remove('completed');
-                    }
-                }
-            });
-            
-            updateCompletedCount();
+
+        function openRaffleModal() {
+            document.getElementById('raffleModal').style.display = 'flex';
         }
-        
-        function updateCompletedCount() {
-            let count = 0;
-            for (const category in userChoices) {
-                if (userChoices[category].selected.length > 0 || userChoices[category].comment.trim() !== '') {
-                    count++;
-                }
-            }
-            completedCount.textContent = count;
-            return count;
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
         }
-        
-        function checkCompletion() {
-            const completed = updateCompletedCount();
-            
-            if (completed > 0) {
-                generatePuzzleBtn.disabled = false;
-                participateRaffleBtn.disabled = false;
-            } else {
-                generatePuzzleBtn.disabled = true;
-                participateRaffleBtn.disabled = true;
-            }
-        }
-        
-        generatePuzzleBtn.addEventListener('click', function() {
-            alert('Функция формирования пазла будет реализована позже. Выбранные организации сохранены.');
-            
-            console.log('Выбор пользователя:', userChoices);
-        });
-        
-        participateRaffleBtn.addEventListener('click', function() {
-            raffleModal.style.display = 'block';
-        });
-        
-        submitRaffleBtn.addEventListener('click', function() {
-            const name = document.getElementById('raffle-name').value;
-            const phone = document.getElementById('raffle-phone').value;
-            const time = document.getElementById('raffle-time').value;
-            
-            if (!name || !phone || !time) {
-                alert('Пожалуйста, заполните все поля');
+
+        function saveSelection() {
+            const checkboxes = document.querySelectorAll('#orgModal input[type="checkbox"]:checked');
+            if (checkboxes.length > 3) {
+                alert('Выберите не более 3 организаций.');
                 return;
             }
-            
-            alert(`Спасибо, ${name}! Ваша заявка на участие в розыгрыше принята.`);
-            
-            raffleModal.style.display = 'none';
-            
-            document.getElementById('raffle-name').value = '';
-            document.getElementById('raffle-phone').value = '';
-            document.getElementById('raffle-time').value = '';
-            
-            participateRaffleBtn.disabled = true;
-            participateRaffleBtn.textContent = 'Вы уже участвуете в розыгрыше';
-        });
-        
-        closeButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                organizationModal.style.display = 'none';
-                raffleModal.style.display = 'none';
-            });
-        });
-        
-        window.addEventListener('click', function(event) {
-            if (event.target === organizationModal) {
-                organizationModal.style.display = 'none';
+            selectedCount += checkboxes.length;
+            document.getElementById('selected-count').textContent = selectedCount;
+            closeModal('orgModal');
+        }
+
+        function formPuzzle() {
+            alert('Ваш образовательный пазл сформирован!');
+        }
+
+        function submitRaffle() {
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const raffleTime = document.getElementById('raffle-time').value;
+            if (!name || !phone || !raffleTime) {
+                alert('Пожалуйста, заполните все поля.');
+                return;
             }
-            if (event.target === raffleModal) {
-                raffleModal.style.display = 'none';
-            }
-        });
-        
-        function getCategoryName(category) {
-            const names = {
-                preschool: "Дошкольное развитие",
-                creativity: "Творчество",
-                languages: "Языки",
-                sport: "Спорт",
-                science: "Наука", 
-                personal: "Развитие личности",
-                it: "IT",
-                profession: "Профессия",
-                education: "Общее образование"
-            };
-            return names[category];
+            alert('Заявка на розыгрыш отправлена!');
+            closeModal('raffleModal');
         }
     </script>
 </body>
