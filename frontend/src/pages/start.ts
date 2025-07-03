@@ -1,5 +1,6 @@
 import sheepImg from '../assets/closeup-shot-sheep.avif'
 import { renderPage } from '../router'
+import { categories } from '../data'
 
 export default function StartPage() {
     const divElement = document.createElement('div')
@@ -12,14 +13,22 @@ export default function StartPage() {
     imgElement.className = 'main-image'
     imgElement.src = sheepImg
 
-    const buttonElement = document.createElement('button')
-    buttonElement.classList.add('btn', 'f-btn')
-    buttonElement.textContent = 'Тест отправки'
-    buttonElement.addEventListener('click', () => {
-        renderPage('form')
-    })
 
-    divElement.append(h1Element, imgElement, buttonElement)
+    const sectionElement = document.createElement('section')
+    sectionElement.className = ''
+
+    for (const {category} of categories) {
+        const buttonElement = document.createElement('button')
+        buttonElement.classList.add('btn', 'f-btn')
+        buttonElement.textContent = category
+        buttonElement.addEventListener('click', () => {
+            renderPage('form', category)
+        })
+        sectionElement.appendChild(buttonElement)
+    }
+
+
+    divElement.append(h1Element, imgElement, sectionElement)
 
     return divElement
 }

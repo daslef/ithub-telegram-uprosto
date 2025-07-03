@@ -4,10 +4,13 @@ import FormPage from "./pages/form";
 
 import { app } from "./script";
 
-export function renderPage(page: 'start' | 'form' | 'end') {
+type Page = 'start' | 'form' | 'end'
+type Category =  string | undefined
+
+export function renderPage(page: Page, category?: Category) {
     const pages = {
         'start': StartPage,
-        'form': FormPage,
+        'form': () => FormPage(category!),
         'end': EndPage
     }
     app.innerHTML = ''

@@ -1,17 +1,21 @@
 import { tg } from "../tg"
 import { renderPage } from "../router"
+import { categories } from "../data"
 
-export default function FormPage() {
+export default function FormPage(categoryName: string) {
+    const categoryData = categories.find(({category}) => category === categoryName)
+
     const formElement = document.createElement('form')
     formElement.className = 'test-form'
 
-    const inputHeading = document.createElement('input')
-    const inputDescription = document.createElement('input')
-    const inputText = document.createElement('input')
+    const divElement = document.createElement('div')
+    for (const item of categoryData!.items) {
+        const inputElement = document.createElement('input')
+        inputElement.className = 'title-inp'
+        inputElement.placeholder = item.title
+        divElement.appendChild(inputElement)
+    }
 
-    inputHeading.className = "title-inp"
-    inputDescription.className = "desc-inp"
-    inputText.className = "text-inp"
 
     const buttonElement = document.createElement('button')
     buttonElement.classList.add('btn', 's-btn')
@@ -33,7 +37,7 @@ export default function FormPage() {
     });
 
 
-    formElement.append(inputHeading, inputDescription, inputText, buttonElement)
+    formElement.append(divElement, buttonElement)
 
     return formElement
 }
