@@ -18,6 +18,12 @@ button {
     cursor: pointer;
 }
 
+button:disabled {
+    pointer-events: none;
+    cursor: default;
+    opacity: 0.6;
+}
+
 .Main {
     width: 100%;
     padding: 25px;

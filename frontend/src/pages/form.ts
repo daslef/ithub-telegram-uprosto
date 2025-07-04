@@ -2,6 +2,11 @@ import { tg } from "../tg"
 import { renderPage } from "../router"
 import { categories } from "../data"
 
+function getCheckedElements(formElement: HTMLFormElement) {
+    const inputs = [...formElement.querySelectorAll('input')].filter(inputElement => inputElement.checked).map(({ value }) => value)
+    return inputs
+}
+
 export default function FormPage(categoryName: string) {
     const categoryData = categories.find(({category}) => category === categoryName)
 
@@ -16,7 +21,12 @@ export default function FormPage(categoryName: string) {
 
         const inputElement = document.createElement('input')
         inputElement.className = 'title-inp'
+        inputElement.value = item.id
         inputElement.type = 'checkbox'
+        inputElement.addEventListener('input', () => {
+            const button = formElement.querySelector('button')
+            button!.disabled = getCheckedElements(formElement).length < 3
+        })
 
         const labelElement = document.createElement('label')
         labelElement.textContent = item.title
@@ -28,21 +38,29 @@ export default function FormPage(categoryName: string) {
 
     const buttonElement = document.createElement('button')
     buttonElement.classList.add('btn', 's-btn')
+    buttonElement.disabled = true
     buttonElement.textContent = 'Отправить'
 
-    buttonElement.addEventListener("click", () => {
-        const title = document.querySelector(".title-inp") as HTMLInputElement;
-        const description = document.querySelector(".desc-inp") as HTMLInputElement;
-        const text = document.querySelector(".text-inp") as HTMLInputElement;
+    formElement.addEventListener("submit", (event) => {
+        event.preventDefault()
+        const values = getCheckedElements(formElement)
+        
+        tg.CloudStorage.setItem('data', values, (error: Error) => {
+            if (error) {
+                console.log('Error on writing data', error)
+            }
+            renderPage('start')
+        })
 
-        const data = {
-            title: title.value,
-            desc: description.value,
-            text: text.value
-        }
+        // const data = {
+        //     title: title.value,
+        //     desc: description.value,
+        //     text: text.value
+        // }
 
-        tg.sendData(JSON.stringify(data));
-        renderPage('start')
+        // tg.sendData(JSON.stringify(data));
+
+        // renderPage('start')
     });
 
 
