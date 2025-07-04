@@ -8,6 +8,18 @@ function getCheckedElements(formElement: HTMLFormElement) {
 }
 
 export default function FormPage(categoryName: string) {
+    const storage: string[] = []
+    
+    tg.CloudStorage.getItem('data', (error: Error, value: any) => {
+        console.log(error, value)
+        if (error) {
+            return
+        }
+        return typeof value === 'string' ? storage.push(...JSON.parse(value)) : storage.push(...value)
+    })
+
+    console.log(storage)
+
     const categoryData = categories.find(({category}) => category === categoryName)
 
     const formElement = document.createElement('form')
@@ -23,6 +35,7 @@ export default function FormPage(categoryName: string) {
         inputElement.className = 'title-inp'
         inputElement.value = item.id
         inputElement.type = 'checkbox'
+        // inputElement.checked = storage?.includes(item.id)
         inputElement.addEventListener('input', () => {
             const button = formElement.querySelector('button')
             button!.disabled = getCheckedElements(formElement).length < 3
