@@ -16,6 +16,7 @@ body {
 button {
     appearance: none;
     cursor: pointer;
+    border: transparent;
 }
 
 button:disabled {

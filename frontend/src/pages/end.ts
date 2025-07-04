@@ -1,3 +1,5 @@
+import '../style.css'
+
 export default function EndPage() {
     const divElement = document.createElement('div')
     divElement.className = 'Main'

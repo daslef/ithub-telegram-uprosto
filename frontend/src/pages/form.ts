@@ -1,6 +1,7 @@
 import { tg } from "../telegram-web-app"
 import { renderPage } from "../router"
 import { categories } from "../data"
+import '../style.css'
 
 // <article id="orgModal" class="modal">
 //         <form class="modal-content">
