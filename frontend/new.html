@@ -1,25 +1,46 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Электронный навигатор фестиваля</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="container">
         <h1>Электронный навигатор фестиваля</h1>
-        
+
         <div class="game-description">
             <h2>ИГРА: Собери свой образовательный пазл</h2>
-            <p>Образование — это пазл. Каждый фрагмент которого отражает определённое направление развития ребёнка. 
-            Каждый ребёнок — уникален, и его путь в образовании складывается как пазл из его интересов, опыта, 
-            предпочтений, увлечений, целей. У каждого — свой путь: кто-то начнёт с творчества, кто-то — с IT или спорта.</p>
-            <p>Собирайте собственную «образовательную картину» из фрагментов, которые отражают те области, 
-            что откликаются именно вам. Не обязательно проходить все стенды, можно выбирать только интересные области.</p>
+            <p><b>Образование — это пазл.</b> Каждый фрагмент которого отражает определённое направление развития
+                ребёнка. Каждый ребёнок — уникален, и его путь в образовании складывается как пазл из его интересов,
+                опыта,
+                предпочтений, увлечений, целей. У каждого — свой путь: кто-то начнёт с творчества, кто-то — с IT или
+                спорта.</p>
+            <p>Собирайте собственную «образовательную картину» из фрагментов, которые отражают те области,
+                что откликаются именно вам. Не обязательно проходить все стенды, можно выбирать только интересные
+                области.</p>
         </div>
+        <span id="counter">0</span>
+        <button onclick="incrementCounter()"></button>
 
-        <h3>Выберите интересующие вас категории (заполнено: <span id="selected-count">0</span>/9)</h3>
+        <script>
+            let count = 0;
+            const counterElement = document.getElementById('counter');
+
+            function incrementCounter() {
+                if (count < 9) {
+                    count++;
+                    counterElement.textContent = count;
+                } else {
+                    alert();
+                }
+            }
+        </script>
+
+        <h3>Заполните категории (заполнено: <span id="selected-count">0</span>/9)</h3>
         <div class="categories">
             <div class="category" data-category="preschool">ДОШКОЛЬНОЕ РАЗВИТИЕ</div>
             <div class="category" data-category="sport">СПОРТ</div>
@@ -65,7 +86,6 @@
             <div class="form-group">
                 <label for="phone">Телефон:</label>
                 <input type="tel" id="phone" placeholder="Введите ваш телефон">
-Hannah
             </div>
             <div class="form-group">
                 <label for="raffle-time">Выберите дату и время розыгрыша:</label>
@@ -127,4 +147,5 @@ Hannah
         }
     </script>
 </body>
+
 </html>

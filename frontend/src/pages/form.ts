@@ -2,6 +2,22 @@ import { tg } from "../telegram-web-app"
 import { renderPage } from "../router"
 import { categories } from "../data"
 
+// <article id="orgModal" class="modal">
+//         <form class="modal-content">
+//             <span class="close" onclick="closeModal('orgModal')">×</span>
+//             <h2>Выберите организации</h2>
+//             <p>Отметьте до 3 организаций в этой категории</p>
+//             <section class="options">
+//                 <label><input type="checkbox" name="org"> Организация 1</label>
+//                 <label><input type="checkbox" name="org"> Организация 2</label>
+//                 <label><input type="checkbox" name="org"> Организация 3</label>
+//             </section>
+//             <p>Не хватило (до 100 символов):</p>
+//             <textarea placeholder="Ваши предложения"></textarea>
+//             <button onclick="saveSelection()">Сохранить выбор</button>
+//         </form>
+//     </article>
+
 function getCheckedElements(formElement: HTMLFormElement) {
     const inputs = [...formElement.querySelectorAll('input')].filter(inputElement => inputElement.checked).map(({ value }) => value)
     return inputs
@@ -31,9 +47,11 @@ export default function FormPage(categoryName: string) {
     const categoryData = categories.find(({ category }) => category === categoryName)
 
     const formElement = document.createElement('form')
-    formElement.className = 'test-form'
+    formElement.className = 'modal-content'
 
-    const divElement = document.createElement('div')
+    const divElement = document.createElement('section')
+    divElement.className = "options"
+
     for (const item of categoryData!.items) {
         const wrapperElement = document.createElement('section')
         wrapperElement.className = ''
@@ -56,7 +74,6 @@ export default function FormPage(categoryName: string) {
         divElement.appendChild(wrapperElement)
     }
 
-
     const buttonElement = document.createElement('button')
     buttonElement.classList.add('btn', 's-btn')
     buttonElement.disabled = true
@@ -64,7 +81,8 @@ export default function FormPage(categoryName: string) {
 
     formElement.addEventListener("submit", (event) => {
         event.preventDefault()
-        const values = getCheckedElements(formElement)
+        const values = getCheckedElements(formElement);
+        (window as any).completed.push(categoryName)
 
         try {
             tg.CloudStorage.setItem('data', JSON.stringify(values), (error) => {
@@ -75,6 +93,7 @@ export default function FormPage(categoryName: string) {
             })
         } catch (error) {
             console.error(error)
+            renderPage('start')
         }
 
         // const data = {
@@ -90,6 +109,5 @@ export default function FormPage(categoryName: string) {
 
 
     formElement.append(divElement, buttonElement)
-
     return formElement
 }

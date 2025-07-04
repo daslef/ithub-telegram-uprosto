@@ -14,10 +14,9 @@ function renderHeader() {
 
     const descriptionContentElement = document.createElement('p')
     descriptionHeadingElement.innerHTML = `Образование — это пазл. Каждый фрагмент которого отражает определённое направление развития ребёнка.
-            Каждый ребёнок — уникален, и его путь в образовании складывается как пазл из его интересов, опыта,
-        предпочтений, увлечений, целей.У каждого — свой путь: кто - то начнёт с творчества, кто - то — с IT или спорта.
-            <br /> Собирайте собственную «образовательную картину» из фрагментов, которые отражают те области,
-                что откликаются именно вам.Не обязательно проходить все стенды, можно выбирать только интересные области.`
+        Каждый ребёнок — уникален, и его путь в образовании складывается как пазл из его интересов, опыта, предпочтений, увлечений, целей. 
+        У каждого — свой путь: кто - то начнёт с творчества, кто - то — с IT или спорта. Собирайте собственную «образовательную картину» 
+        из фрагментов, которые отражают те области, что откликаются именно вам.Не обязательно проходить все стенды, можно выбирать только интересные области.`
 
     descriptionWrapperElement.append(descriptionHeadingElement, descriptionContentElement)
 
@@ -27,7 +26,7 @@ function renderHeader() {
 function renderStatus() {
     const statusElement = document.createElement('h3')
     const tipText = 'Выберите интересующие вас категории'
-    statusElement.innerHTML = `<h3>${tipText} (заполнено: <span id="selected-count">0</span>/9)</h3>`
+    statusElement.innerHTML = `<h3>${tipText} (заполнено: <span id="selected-count">${(window as any).completed.length ?? 0}</span>/9)</h3>`
 
     return statusElement
 }
@@ -38,6 +37,7 @@ function renderCategories() {
 
     for (const { category } of categories) {
         const buttonElement = document.createElement('button')
+        buttonElement.disabled = (window as any).completed?.includes(category)
         buttonElement.classList.add('category')
         buttonElement.textContent = category
         buttonElement.addEventListener('click', () => {
