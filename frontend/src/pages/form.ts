@@ -2,6 +2,22 @@ import { tg } from "../tg"
 import { renderPage } from "../router"
 import { categories } from "../data"
 
+// <article id="orgModal" class="modal">
+//         <form class="modal-content">
+//             <span class="close" onclick="closeModal('orgModal')">×</span>
+//             <h2>Выберите организации</h2>
+//             <p>Отметьте до 3 организаций в этой категории</p>
+//             <section class="options">
+//                 <label><input type="checkbox" name="org"> Организация 1</label>
+//                 <label><input type="checkbox" name="org"> Организация 2</label>
+//                 <label><input type="checkbox" name="org"> Организация 3</label>
+//             </section>
+//             <p>Не хватило (до 100 символов):</p>
+//             <textarea placeholder="Ваши предложения"></textarea>
+//             <button onclick="saveSelection()">Сохранить выбор</button>
+//         </form>
+//     </article>
+
 function getCheckedElements(formElement: HTMLFormElement) {
     const inputs = [...formElement.querySelectorAll('input')].filter(inputElement => inputElement.checked).map(({ value }) => value)
     return inputs
@@ -9,23 +25,30 @@ function getCheckedElements(formElement: HTMLFormElement) {
 
 export default function FormPage(categoryName: string) {
     const storage: string[] = []
-    
-    tg.CloudStorage.getItem('data', (error: Error, value: any) => {
-        console.log(error, value)
-        if (error) {
-            return
-        }
-        return typeof value === 'string' ? storage.push(...JSON.parse(value)) : storage.push(...value)
-    })
+
+    try {
+        tg.CloudStorage.getItem('data', (error: Error, value: any) => {
+            console.log(error, value)
+            if (error) {
+                return
+            }
+            return typeof value === 'string' ? storage.push(...JSON.parse(value)) : storage.push(...value)
+        })
+
+    } catch (error) {
+        console.error(error)
+    }
 
     console.log(storage)
 
-    const categoryData = categories.find(({category}) => category === categoryName)
+    const categoryData = categories.find(({ category }) => category === categoryName)
 
     const formElement = document.createElement('form')
-    formElement.className = 'test-form'
+    formElement.className = 'modal-content'
 
-    const divElement = document.createElement('div')
+    const divElement = document.createElement('section')
+    divElement.className = "options"
+
     for (const item of categoryData!.items) {
         const wrapperElement = document.createElement('section')
         wrapperElement.className = ''
@@ -57,13 +80,20 @@ export default function FormPage(categoryName: string) {
     formElement.addEventListener("submit", (event) => {
         event.preventDefault()
         const values = getCheckedElements(formElement)
-        
-        tg.CloudStorage.setItem('data', values, (error: Error) => {
-            if (error) {
-                console.log('Error on writing data', error)
-            }
+
+        ;(window as any).completed.push(categoryName)
+
+        try {
+            tg.CloudStorage.setItem('data', values, (error: Error) => {
+                if (error) {
+                    console.log('Error on writing data', error)
+                }
+                renderPage('start')
+            })
+        } catch (error) {
+            console.error(error)
             renderPage('start')
-        })
+        }
 
         // const data = {
         //     title: title.value,
@@ -80,4 +110,6 @@ export default function FormPage(categoryName: string) {
     formElement.append(divElement, buttonElement)
 
     return formElement
+
+
 }

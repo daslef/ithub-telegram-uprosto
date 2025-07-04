@@ -26,7 +26,7 @@ function renderHeader() {
 function renderStatus() {
     const statusElement = document.createElement('h3')
     const tipText = 'Выберите интересующие вас категории'
-    statusElement.innerHTML = `<h3>${tipText} (заполнено: <span id="selected-count">0</span>/9)</h3>`
+    statusElement.innerHTML = `<h3>${tipText} (заполнено: <span id="selected-count">${(window as any).completed.length ?? 0}</span>/9)</h3>`
 
     return statusElement
 }
@@ -37,6 +37,7 @@ function renderCategories() {
 
     for (const { category } of categories) {
         const buttonElement = document.createElement('button')
+        buttonElement.disabled = (window as any).completed?.includes(category)
         buttonElement.classList.add('category')
         buttonElement.textContent = category
         buttonElement.addEventListener('click', () => {
