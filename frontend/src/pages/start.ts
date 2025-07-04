@@ -53,6 +53,7 @@ function renderButtons() {
     buttonsElement.className = 'buttons'
 
     const generateButtonElement = document.createElement('button')
+    generateButtonElement.disabled = (window as any).completed.length < 9
     generateButtonElement.classList.add('btn', 'btn-primary')
     generateButtonElement.textContent = 'Сформировать пазл'
 

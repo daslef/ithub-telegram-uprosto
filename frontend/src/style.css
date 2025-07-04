@@ -110,6 +110,10 @@ h2 {
     filter: brightness(1.05);
 }
 
+.btn:disabled {
+    filter: grayscale();
+}
+
 .modal {
     display: none;
     position: fixed;
