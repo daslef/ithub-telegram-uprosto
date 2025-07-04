@@ -1,4 +1,4 @@
-import { tg } from "../tg"
+import { tg } from "../telegram-web-app"
 import { renderPage } from "../router"
 import { categories } from "../data"
 
@@ -9,18 +9,26 @@ function getCheckedElements(formElement: HTMLFormElement) {
 
 export default function FormPage(categoryName: string) {
     const storage: string[] = []
-    
-    tg.CloudStorage.getItem('data', (error: Error, value: any) => {
-        console.log(error, value)
-        if (error) {
-            return
-        }
-        return typeof value === 'string' ? storage.push(...JSON.parse(value)) : storage.push(...value)
-    })
+
+    try {
+        tg.CloudStorage.getItem('data', (error, value) => {
+            if (error) {
+                throw new Error(error)
+            }
+            if (value === null) {
+                throw new Error("No value received")
+            }
+
+            console.log(value, JSON.parse(value))
+            return storage.push(...JSON.parse(value))
+        })
+    } catch (error) {
+        console.error(error)
+    }
 
     console.log(storage)
 
-    const categoryData = categories.find(({category}) => category === categoryName)
+    const categoryData = categories.find(({ category }) => category === categoryName)
 
     const formElement = document.createElement('form')
     formElement.className = 'test-form'
@@ -57,13 +65,17 @@ export default function FormPage(categoryName: string) {
     formElement.addEventListener("submit", (event) => {
         event.preventDefault()
         const values = getCheckedElements(formElement)
-        
-        tg.CloudStorage.setItem('data', values, (error: Error) => {
-            if (error) {
-                console.log('Error on writing data', error)
-            }
-            renderPage('start')
-        })
+
+        try {
+            tg.CloudStorage.setItem('data', JSON.stringify(values), (error) => {
+                if (error) {
+                    throw new Error(`Error on writing data ${error}`)
+                }
+                renderPage('start')
+            })
+        } catch (error) {
+            console.error(error)
+        }
 
         // const data = {
         //     title: title.value,
