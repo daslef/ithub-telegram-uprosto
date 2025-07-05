@@ -20,8 +20,8 @@ def send_festival_map(update: Update, context: CallbackContext) -> None:
     """Отправляет карту фестиваля"""
     chat_id = update.message.chat_id
     
-    if os.path.exists(FESTIVAL_MAP_PATH):
-        with open("zatichka", 'rb') as photo:
+    if os.path.exists("festival_map"):
+        with open("festival_map", 'rb') as photo:
             context.bot.send_photo(
                 chat_id=chat_id,
                 photo=photo,
