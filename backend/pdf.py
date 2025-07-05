@@ -34,15 +34,17 @@ def create_pdf(data, filename="export.pdf"):
     return filename
 
 create_pdf(fetch_data())
-# from telegram import Bot
-# import os
+from telegram import Bot
+import os
 
-#     async def send_pdf(chat_id, bot_token):
-#         bot = Bot(token=bot_token)
-#         data = fetch_data()  
-#         pdf_path = create_pdf(data)  
+    # async def send_pdf(chat_id, bot_token):
+    # bot = Bot(token='8140513380:AAHTFVRAMc-38YiCBVk13yD4VMITTmIhwaU')
+    # data = fetch_data()  
+    # pdf_path = create_pdf(data)  
 
-#         with open(pdf_path, "rb") as file:
-#             await bot.send_document(chat_id=chat_id, document=file)
-
-#     os.remove(pdf_path)
+    # with open(pdf_path, "rb") as file:
+    #     await bot.send_document(chat_id="https://t.me/Dashatru_botchat_id", document=file)
+    
+    # os.remove(pdf_path)
+    
+    
