@@ -36,37 +36,41 @@ def create_pdf(data, filename="export.pdf"):
 from telegram import Bot
 import os
 import logging
+import asyncio
+from typing import Optional
+
+from category_name import fetch_data, create_pdf  
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-async def send_pdf(chat_id, bot_token):
-    bot = Bot(token="8140513380:AAHTFVRAMc-38YiCBVk13yD4VMITTmIhwaU")
-    pdf_path = None 
-
+async def send_pdf(chat_id: str, bot_token: str) -> None:
+    bot = Bot(token=bot_token)
+    pdf_path: Optional[str] = None  
     try:
         data = fetch_data()
         pdf_path = create_pdf(data)
-        
+
         with open(pdf_path, "rb") as file:
             await bot.send_document(chat_id=chat_id, document=file)
         logger.info("PDF успешно отправлен!")
 
     except FileNotFoundError:
-        logger.error("PDF не найден!")
+        logger.error("PDF файл не найден!")
     except Exception as e:
-        logger.error(f"Ошибка: {e}")
+        logger.error(f"Произошла ошибка: {e}")
     finally:
         if pdf_path and os.path.exists(pdf_path):
             os.remove(pdf_path)
-            import asyncio
+            logger.info("Временный PDF файл удален")
 
 async def main():
+
     await send_pdf(
         chat_id="@Dashatru_bot",  
-        bot_token="8140513380:AAHTFVRAMc-38YiCBVk13yD4VMITTmIhwaU"  
+        bot_token="8140513380:AAHTFVRAMc-38YiCBVk13yD4VMITTmIhwaU"        
     )
 
-asyncio.run(main())
-    
+if __name__ == "__main__":
+    asyncio.run(main())
     
