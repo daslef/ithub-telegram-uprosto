@@ -28,11 +28,11 @@ export default function FormPage(categoryName: string) {
     const storage: string[] = []
 
     try {
-        tg.CloudStorage.getItem('data', (error, value) => {
+        tg.CloudStorage.getItem('festival', (error, value) => {
             if (error) {
                 throw new Error(error)
             }
-            if (value === null) {
+            if (value === null || value === '' ) {
                 throw new Error("No value received")
             }
 
@@ -62,7 +62,7 @@ export default function FormPage(categoryName: string) {
         inputElement.className = 'title-inp'
         inputElement.value = item.id
         inputElement.type = 'checkbox'
-        // inputElement.checked = storage?.includes(item.id)
+        inputElement.checked = storage?.includes(item.id)
         inputElement.addEventListener('input', () => {
             const button = formElement.querySelector('button')
             button!.disabled = getCheckedElements(formElement).length < 3
@@ -86,7 +86,7 @@ export default function FormPage(categoryName: string) {
         (window as any).completed.push(categoryName)
 
         try {
-            tg.CloudStorage.setItem('data', JSON.stringify(values), (error) => {
+            tg.CloudStorage.setItem('festival', JSON.stringify([...storage, values]), (error) => {
                 if (error) {
                     throw new Error(`Error on writing data ${error}`)
                 }
@@ -97,15 +97,6 @@ export default function FormPage(categoryName: string) {
             renderPage('start')
         }
 
-        // const data = {
-        //     title: title.value,
-        //     desc: description.value,
-        //     text: text.value
-        // }
-
-        // tg.sendData(JSON.stringify(data));
-
-        // renderPage('start')
     });
 
 

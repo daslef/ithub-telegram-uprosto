@@ -1,5 +1,6 @@
 import { renderPage } from '../router'
 import { categories } from '../data'
+import { tg } from '../telegram-web-app'
 import '../style.css'
 
 function renderHeader() {
@@ -26,7 +27,7 @@ function renderHeader() {
 function renderStatus() {
     const statusElement = document.createElement('h3')
     const tipText = 'Выберите интересующие вас категории'
-    statusElement.innerHTML = `<h3>${tipText} (заполнено: <span id="selected-count">${(window as any).completed.length ?? 0}</span>/9)</h3>`
+    statusElement.innerHTML = `<h3>${tipText} (заполнено: <span id="selected-count">${(window as any).completed.length ?? 0}</span>/${categories.length})</h3>`
 
     return statusElement
 }
@@ -53,9 +54,25 @@ function renderButtons() {
     buttonsElement.className = 'buttons'
 
     const generateButtonElement = document.createElement('button')
-    generateButtonElement.disabled = (window as any).completed.length < 9
+    generateButtonElement.disabled = (window as any).completed.length < categories.length
     generateButtonElement.classList.add('btn', 'btn-primary')
     generateButtonElement.textContent = 'Сформировать пазл'
+    generateButtonElement.addEventListener('click', () => {
+        try {
+            tg.CloudStorage.getItem('festival', (error, value) => {
+                if (error) {
+                    throw new Error(error)
+                }
+                if (value === null || value === '') {
+                    throw new Error("No value received")
+                }
+
+                tg.sendData(value);
+            })
+        } catch (error) {
+            console.error(error)
+        }
+    })
 
     const participateButtonElement = document.createElement('button')
     participateButtonElement.classList.add('btn', 'btn-secondary')
