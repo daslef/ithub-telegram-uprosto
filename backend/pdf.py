@@ -39,7 +39,7 @@ import logging
 import asyncio
 from typing import Optional
 
-from category_name import fetch_data, create_pdf  
+from pdf import fetch_data, create_pdf  
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
