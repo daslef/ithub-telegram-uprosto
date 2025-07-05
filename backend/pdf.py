@@ -52,20 +52,25 @@ async def send_pdf(chat_id: str, bot_token: str) -> None:
         pdf_path = create_pdf(data)
 
         with open(pdf_path, "rb") as file:
-            await bot.send_document(chat_id=chat_id, document=file)
+            await bot.send_document(
+                chat_id=chat_id, 
+                document=file,
+                caption="Ваш PDF файл готов! Вот результаты:"  
+            )
         logger.info("PDF успешно отправлен!")
 
     except FileNotFoundError:
         logger.error("PDF файл не найден!")
+        await bot.send_message(chat_id=chat_id, text="Ошибка: не удалось создать PDF файл")
     except Exception as e:
         logger.error(f"Произошла ошибка: {e}")
+        await bot.send_message(chat_id=chat_id, text=f"Ошибка: {e}")
     finally:
         if pdf_path and os.path.exists(pdf_path):
             os.remove(pdf_path)
             logger.info("Временный PDF файл удален")
 
 async def main():
-
     await send_pdf(
         chat_id="@Dashatru_bot",  
         bot_token="8140513380:AAHTFVRAMc-38YiCBVk13yD4VMITTmIhwaU"        
@@ -73,4 +78,13 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-    
+
+    data = fetch_data()
+if not data:
+    raise ValueError("No data fetched")
+
+pdf_path = create_pdf(data)
+if not os.path.exists(pdf_path):
+    raise FileNotFoundError("PDF was not created")
+logger.info(f"Fetched data: {type(data)}, length: {len(data) if hasattr(data, '__len__') else 'N/A'}")
+logger.info(f"PDF created at: {pdf_path}")

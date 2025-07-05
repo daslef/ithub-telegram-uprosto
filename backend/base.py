@@ -109,7 +109,7 @@ def category_handler(update: Update, context: CallbackContext) -> None:
             
     except Error as e:
         logger.error(f"Ошибка при получении информации о категории: {e}")
-        query.edit_message_text("Произошла ошибка при получениинформации.")
+        query.edit_message_text("Произошла ошибка приполучениинформации.")
     finally:
         if connection.is_connected():
             cursor.close()
