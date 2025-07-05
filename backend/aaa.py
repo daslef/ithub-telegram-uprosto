@@ -5,7 +5,7 @@ import os
 # Токен бота
 TOKEN = '8140513380:AAHTFVRAMc-38YiCBVk13yD4VMITTmIhwaU'
 # Путь к изображению карты фестиваля
-FESTIVAL_MAP_PATH = "festival_map.jpg"  # Убедитесь, что файл существует
+FESTIVAL_MAP_PATH = "festival_map.png"  # Убедитесь, что файл существует
 
 def start(update: Update, context: CallbackContext) -> None:
     """Отправляет приветственное сообщение и клавиатуру с кнопкой"""
@@ -43,5 +43,4 @@ def main() -> None:
     updater.start_polling()
     updater.idle()
 
-if name == 'main':
-    main()
+main()
