@@ -1,3 +1,5 @@
+import menuSvg from '../assets/jigsaw.svg?raw'
+
 import { renderPage } from '../router'
 import { categories } from '../data'
 import { tg } from '../telegram-web-app'
@@ -15,8 +17,8 @@ function renderHeader() {
 
     const descriptionContentElement = document.createElement('p')
     descriptionHeadingElement.innerHTML = `Образование — это пазл. Каждый фрагмент которого отражает определённое направление развития ребёнка.
-        Каждый ребёнок — уникален, и его путь в образовании складывается как пазл из его интересов, опыта, предпочтений, увлечений, целей. 
-        У каждого — свой путь: кто - то начнёт с творчества, кто - то — с IT или спорта. Собирайте собственную «образовательную картину» 
+        Каждый ребёнок — уникален, и его путь в образовании складывается как пазл из его интересов, опыта, предпочтений, увлечений, целей.
+        У каждого — свой путь: кто - то начнёт с творчества, кто - то — с IT или спорта. Собирайте собственную «образовательную картину»
         из фрагментов, которые отражают те области, что откликаются именно вам.Не обязательно проходить все стенды, можно выбирать только интересные области.`
 
     descriptionWrapperElement.append(descriptionHeadingElement, descriptionContentElement)
@@ -34,18 +36,28 @@ function renderStatus() {
 
 function renderCategories() {
     const categoriesElement = document.createElement('section')
+    categoriesElement.innerHTML = menuSvg
     categoriesElement.className = 'categories'
 
-    for (const { category } of categories) {
-        const buttonElement = document.createElement('button')
-        buttonElement.disabled = (window as any).completed?.includes(category)
+    for (const { id, category } of categories) {
+        const buttonElement = categoriesElement.querySelector(`#${id}`)!
         buttonElement.classList.add('category')
-        buttonElement.textContent = category
-        buttonElement.addEventListener('click', () => {
-            renderPage('form', category)
-        })
-        categoriesElement.appendChild(buttonElement)
+        const iconDone = buttonElement.querySelector('.icon-done')!
+
+        if ((window as any).completed?.includes(category)) {
+            buttonElement.classList.add('disabled')
+            iconDone.classList.add('show')
+        }
+
+
+
+        for (const child of buttonElement.children) {
+            child.addEventListener('click', () => {
+                renderPage('form', category)
+            })
+        }
     }
+
     return categoriesElement
 }
 
@@ -89,9 +101,9 @@ export default function StartPage() {
     const [h1Element, descriptionWrapperElement] = renderHeader()
     const statusElement = renderStatus()
     const categoriesElement = renderCategories()
-    const buttonsElement = renderButtons()
+    const menuElement = renderButtons()
 
-    divElement.append(h1Element, descriptionWrapperElement, statusElement, categoriesElement, buttonsElement)
+    divElement.append(h1Element, descriptionWrapperElement, statusElement, categoriesElement, menuElement)
 
     return divElement
 }

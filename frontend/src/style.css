@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -7,7 +9,7 @@
 body {
     color: black;
     background: white;
-    font-family: Arial, sans-serif;
+    font-family: "Andika", sans-serif;
     margin: 0;
     padding: 20px;
     background-color: #f4f4f4;
@@ -57,30 +59,23 @@ h2 {
 
 .categories {
     margin-top: 25px;
-    display: grid;
-    flex-wrap: wrap;
-    gap: 15px;
     margin-bottom: 30px;
-    grid-template-columns: repeat(3, 1fr);
 }
 
 .category {
-    background-color: #3498db;
-    color: white;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
     cursor: pointer;
-    height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 18px;
 
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+}
+
+.category.disabled {
+    pointer-events: none;
+}
+
+.category.disabled .st6 {
+    fill: #FDF5E5;
 }
 
 .category:hover {
@@ -190,38 +185,6 @@ h2 {
     border-radius: 4px;
 }
 
-.category:nth-child(1) {
-    background-color: #e74c3c;
-}
-
-.category:nth-child(2) {
-    background-color: #2ecc71;
-}
-
-.category:nth-child(3) {
-    background-color: #f39c12;
-}
-
-.category:nth-child(4) {
-    background-color: #9b59b6;
-}
-
-.category:nth-child(5) {
-    background-color: #1abc9c;
-}
-
-.category:nth-child(6) {
-    background-color: #d35400;
-}
-
-.category:nth-child(7) {
-    background-color: #34495e;
-}
-
-.category:nth-child(8) {
-    background-color: #16a085;
-}
-
-.category:nth-child(9) {
-    background-color: #c0392b;
+.svg-menu {
+    width: 100%;
 }

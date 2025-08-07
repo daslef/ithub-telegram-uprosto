@@ -3,25 +3,9 @@ import { renderPage } from "../router"
 import { categories } from "../data"
 import '../style.css'
 
-// <article id="orgModal" class="modal">
-//         <form class="modal-content">
-//             <span class="close" onclick="closeModal('orgModal')">×</span>
-//             <h2>Выберите организации</h2>
-//             <p>Отметьте до 3 организаций в этой категории</p>
-//             <section class="options">
-//                 <label><input type="checkbox" name="org"> Организация 1</label>
-//                 <label><input type="checkbox" name="org"> Организация 2</label>
-//                 <label><input type="checkbox" name="org"> Организация 3</label>
-//             </section>
-//             <p>Не хватило (до 100 символов):</p>
-//             <textarea placeholder="Ваши предложения"></textarea>
-//             <button onclick="saveSelection()">Сохранить выбор</button>
-//         </form>
-//     </article>
 
 function getCheckedElements(formElement: HTMLFormElement) {
-    const inputs = [...formElement.querySelectorAll('input')].filter(inputElement => inputElement.checked).map(({ value }) => value)
-    return inputs
+    return [...formElement.querySelectorAll('input')].filter(inputElement => inputElement.checked).map(({ value }) => value)
 }
 
 export default function FormPage(categoryName: string) {
@@ -32,7 +16,7 @@ export default function FormPage(categoryName: string) {
             if (error) {
                 throw new Error(error)
             }
-            if (value === null || value === '' ) {
+            if (value === null || value === '') {
                 throw new Error("No value received")
             }
 
@@ -56,7 +40,6 @@ export default function FormPage(categoryName: string) {
     for (const item of categoryData!.items) {
         const wrapperElement = document.createElement('section')
         wrapperElement.className = ''
-
 
         const inputElement = document.createElement('input')
         inputElement.className = 'title-inp'
@@ -83,6 +66,7 @@ export default function FormPage(categoryName: string) {
     formElement.addEventListener("submit", (event) => {
         event.preventDefault()
         const values = getCheckedElements(formElement);
+        console.log(event, values);
         (window as any).completed.push(categoryName)
 
         try {
@@ -90,13 +74,11 @@ export default function FormPage(categoryName: string) {
                 if (error) {
                     throw new Error(`Error on writing data ${error}`)
                 }
-                renderPage('start')
             })
         } catch (error) {
             console.error(error)
-            renderPage('start')
         }
-
+        renderPage('start')
     });
 
 
