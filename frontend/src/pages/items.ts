@@ -80,7 +80,7 @@ export default function FormPage(categoryName: string) {
         } catch (error) {
             console.error(error)
         }
-        renderPage('start')
+        renderPage('categories')
     });
 
 

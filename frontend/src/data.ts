@@ -129,18 +129,12 @@ export const categories = [
 
             {
                 id: "category_4_item_4",
-                title: "Театральная студия «Маска»",
-                contacts: "+70000000034",
-            },
-
-            {
-                id: "category_4_item_5",
                 title: "Балетная школа «Грация»",
                 contacts: "+70000000035",
             },
 
             {
-                id: "category_4_item_6",
+                id: "category_4_item_5",
                 title: "Танцевальная студия «Ритм»",
                 contacts: "+70000000036",
             },

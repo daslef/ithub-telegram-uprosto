@@ -10,7 +10,7 @@ body {
     background: white;
     font-family: "Andika", sans-serif;
     margin: 0;
-    padding: 25px;
+    padding: 25px 20px 10px;
     text-align: center;
 }
 
@@ -96,8 +96,9 @@ h1 {
 
 .form {
     background: #fff;
-    padding: 20px;
     border-radius: 8px;
+    width: max-content;
+    margin: 0 auto;
 }
 
 .form__heading {
