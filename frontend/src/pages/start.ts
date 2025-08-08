@@ -44,12 +44,10 @@ function renderCategories() {
         buttonElement.classList.add('category')
         const iconDone = buttonElement.querySelector('.icon-done')!
 
-        if ((window as any).completed?.includes(category)) {
+        if ((window as any).completed?.includes(id)) {
             buttonElement.classList.add('disabled')
             iconDone.classList.add('show')
         }
-
-
 
         for (const child of buttonElement.children) {
             child.addEventListener('click', () => {
@@ -67,7 +65,7 @@ function renderButtons() {
 
     const generateButtonElement = document.createElement('button')
     generateButtonElement.disabled = (window as any).completed.length < categories.length
-    generateButtonElement.classList.add('btn', 'btn-primary')
+    generateButtonElement.classList.add('start__button', 'start__button--primary')
     generateButtonElement.textContent = 'Сформировать пазл'
     generateButtonElement.addEventListener('click', () => {
         try {
@@ -87,23 +85,23 @@ function renderButtons() {
     })
 
     const participateButtonElement = document.createElement('button')
-    participateButtonElement.classList.add('btn', 'btn-secondary')
+    participateButtonElement.classList.add('start__button', 'start__button--secondary')
     participateButtonElement.textContent = 'Участвовать в розыгрыше'
+    participateButtonElement.setAttribute('disabled', 'disabled')
 
     buttonsElement.append(generateButtonElement, participateButtonElement)
     return buttonsElement
 }
 
 export default function StartPage() {
-    const divElement = document.createElement('div')
-    divElement.classList.add('Main', 'container')
+    const pageElement = document.createElement('article')
 
     const [h1Element, descriptionWrapperElement] = renderHeader()
     const statusElement = renderStatus()
     const categoriesElement = renderCategories()
     const menuElement = renderButtons()
 
-    divElement.append(h1Element, descriptionWrapperElement, statusElement, categoriesElement, menuElement)
+    pageElement.append(h1Element, descriptionWrapperElement, statusElement, categoriesElement, menuElement)
 
-    return divElement
+    return pageElement
 }

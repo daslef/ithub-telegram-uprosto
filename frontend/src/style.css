@@ -7,12 +7,11 @@
 }
 
 body {
-    color: black;
     background: white;
     font-family: "Andika", sans-serif;
     margin: 0;
-    padding: 20px;
-    background-color: #f4f4f4;
+    padding: 25px;
+    text-align: center;
 }
 
 button {
@@ -26,21 +25,6 @@ button:disabled {
     pointer-events: none;
     cursor: default;
     opacity: 0.6;
-}
-
-.Main {
-    width: 100%;
-    padding: 25px;
-    text-align: center;
-}
-
-.container {
-    max-width: 1000px;
-    margin: 0 auto;
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-
 }
 
 h1 {
@@ -85,26 +69,29 @@ h1 {
     margin-bottom: 20px;
 }
 
-.btn {
+.start__button {
     padding: 10px 20px;
     margin: 5px;
-    background: #007bff;
     color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
 
-.btn-secondary {
+.start__button--primary {
+    background: #364CA0;
+}
+
+.start__button--secondary {
     background: #c9349e;
 }
 
-.btn:hover {
+.start__button:hover {
     filter: brightness(1.05);
 }
 
-.btn:disabled {
-    filter: grayscale();
+.start__button:disabled {
+    background: #3d4a57;
 }
 
 .form {

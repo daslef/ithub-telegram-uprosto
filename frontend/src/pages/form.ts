@@ -69,7 +69,7 @@ export default function FormPage(categoryName: string) {
         event.preventDefault()
         const values = getCheckedElements(formElement);
         console.log(event, values);
-        (window as any).completed.push(categoryName)
+        (window as any).completed.push(categoryData?.id)
 
         try {
             tg.CloudStorage.setItem('festival', JSON.stringify([...storage, values]), (error) => {
