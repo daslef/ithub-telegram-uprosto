@@ -12,7 +12,7 @@ function renderHeader() {
     const descriptionWrapperElement = document.createElement('section')
     descriptionWrapperElement.className = 'game-description'
 
-    const descriptionHeadingElement = document.createElement('h2')
+    const descriptionHeadingElement = document.createElement('p')
     descriptionHeadingElement.textContent = 'ИГРА: Собери свой образовательный пазл'
 
     const descriptionContentElement = document.createElement('p')
@@ -29,7 +29,7 @@ function renderHeader() {
 function renderStatus() {
     const statusElement = document.createElement('h3')
     const tipText = 'Выберите интересующие вас категории'
-    statusElement.innerHTML = `<h3>${tipText} (заполнено: <span id="selected-count">${(window as any).completed.length ?? 0}</span>/${categories.length})</h3>`
+    statusElement.innerHTML = `${tipText} (заполнено: <span id="selected-count">${(window as any).completed.length ?? 0}</span>/${categories.length})`
 
     return statusElement
 }

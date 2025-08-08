@@ -32,15 +32,16 @@ export default function FormPage(categoryName: string) {
     const categoryData = categories.find(({ category }) => category === categoryName)
 
     const formElement = document.createElement('form')
-    formElement.className = 'modal-content'
+    formElement.className = 'form'
+
+    const formHeading = document.createElement('h2')
+    formHeading.textContent = categoryName
+    formHeading.className = "form__heading"
 
     const divElement = document.createElement('section')
     divElement.className = "options"
 
     for (const item of categoryData!.items) {
-        const wrapperElement = document.createElement('section')
-        wrapperElement.className = ''
-
         const inputElement = document.createElement('input')
         inputElement.className = 'title-inp'
         inputElement.value = item.id
@@ -52,14 +53,15 @@ export default function FormPage(categoryName: string) {
         })
 
         const labelElement = document.createElement('label')
+        labelElement.className = 'option'
         labelElement.textContent = item.title
+        labelElement.prepend(inputElement)
 
-        wrapperElement.append(inputElement, labelElement)
-        divElement.appendChild(wrapperElement)
+        divElement.appendChild(labelElement)
     }
 
     const buttonElement = document.createElement('button')
-    buttonElement.classList.add('btn', 's-btn')
+    buttonElement.classList.add('form__button')
     buttonElement.disabled = true
     buttonElement.textContent = 'Отправить'
 
@@ -82,6 +84,6 @@ export default function FormPage(categoryName: string) {
     });
 
 
-    formElement.append(divElement, buttonElement)
+    formElement.append(formHeading, divElement, buttonElement)
     return formElement
 }
