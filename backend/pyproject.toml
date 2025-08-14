@@ -6,5 +6,6 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "aiogram>=3.20.0.post0",
+    "peewee>=3.18.2",
     "pydantic-settings>=2.10.1",
 ]

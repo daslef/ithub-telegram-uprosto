@@ -5,11 +5,35 @@ import '../style.css'
 
 
 function getCheckedElements(formElement: HTMLFormElement) {
-    return [...formElement.querySelectorAll('input')].filter(inputElement => inputElement.checked).map(({ value }) => value)
+    return [...formElement.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea')]
+        .filter((inputElement) => {
+            if (inputElement.tagName === "INPUT") {
+                return (inputElement as HTMLInputElement).checked
+            } else if (inputElement.tagName === "TEXTAREA") {
+                return (inputElement as HTMLTextAreaElement).value?.length > 3
+            }
+        })
 }
 
 export default function FormPage(categoryName: string) {
+    function onInput() {
+        const button = formElement.querySelector('button')
+        const checkedNumber = getCheckedElements(formElement).filter(({ tagName }) => tagName === "INPUT").length
+        button!.disabled = checkedNumber === 0
+
+        if (checkedNumber === 3) {
+            for (const element of divElement.querySelectorAll('input:not(:checked)')) {
+                element.setAttribute('disabled', 'disabled')
+            }
+        } else {
+            for (const element of divElement.querySelectorAll('input')) {
+                element.removeAttribute('disabled')
+            }
+        }
+    }
+
     const storage: string[] = []
+    const storage_comments: string[] = []
 
     try {
         tg.CloudStorage.getItem('festival', (error, value) => {
@@ -27,7 +51,24 @@ export default function FormPage(categoryName: string) {
         console.error(error)
     }
 
-    console.log(storage)
+    try {
+        tg.CloudStorage.getItem('festival_comments', (error, value) => {
+            if (error) {
+                throw new Error(error)
+            }
+            if (value === null || value === '') {
+                throw new Error("No value received")
+            }
+
+            console.log(value, JSON.parse(value))
+            return storage_comments.push(...JSON.parse(value))
+        })
+    } catch (error) {
+        console.error(error)
+    }
+
+
+    console.log(storage, storage_comments)
 
     const categoryData = categories.find(({ category }) => category === categoryName)
 
@@ -47,10 +88,7 @@ export default function FormPage(categoryName: string) {
         inputElement.value = item.id
         inputElement.type = 'checkbox'
         inputElement.checked = storage?.includes(item.id)
-        inputElement.addEventListener('input', () => {
-            const button = formElement.querySelector('button')
-            button!.disabled = getCheckedElements(formElement).length < 3
-        })
+        inputElement.addEventListener('input', onInput)
 
         const labelElement = document.createElement('label')
         labelElement.className = 'option'
@@ -60,6 +98,14 @@ export default function FormPage(categoryName: string) {
         divElement.appendChild(labelElement)
     }
 
+    const comments = document.createElement('textarea')
+    comments.className = "form__comments"
+    comments.rows = 5
+    comments.placeholder = "Не хватило? Оставьте комментарий!"
+    comments.className = "form__comment"
+    comments.addEventListener('input', onInput)
+    divElement.append(comments)
+
     const buttonElement = document.createElement('button')
     buttonElement.classList.add('form__button')
     buttonElement.disabled = true
@@ -67,12 +113,25 @@ export default function FormPage(categoryName: string) {
 
     formElement.addEventListener("submit", (event) => {
         event.preventDefault()
-        const values = getCheckedElements(formElement);
-        console.log(event, values);
+        const values = getCheckedElements(formElement).filter(({ tagName }) => tagName === "INPUT").map(({ value }) => value);
+        const comment = formElement.querySelector('textarea')
+        if (comment?.value && comment.value.length > 3) {
+            try {
+                tg.CloudStorage.setItem('festival_comments', JSON.stringify([...storage_comments, comment.value]), (error) => {
+                    if (error) {
+                        throw new Error(`Error on writing data ${error}`)
+                    }
+                })
+            } catch (error) {
+                console.error(error)
+            }
+        }
+
+        console.log(event, values, comment?.value);
         (window as any).completed.push(categoryData?.id)
 
         try {
-            tg.CloudStorage.setItem('festival', JSON.stringify([...storage, values]), (error) => {
+            tg.CloudStorage.setItem('festival', JSON.stringify([...storage, { [categoryData!.id]: values }]), (error) => {
                 if (error) {
                     throw new Error(`Error on writing data ${error}`)
                 }
@@ -80,6 +139,7 @@ export default function FormPage(categoryName: string) {
         } catch (error) {
             console.error(error)
         }
+
         renderPage('categories')
     });
 

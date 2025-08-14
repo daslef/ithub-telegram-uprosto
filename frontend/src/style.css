@@ -105,6 +105,18 @@ h1 {
     margin-bottom: 30px;
 }
 
+.form__comment {
+    padding: 0.5rem;
+    font-size: 1rem;
+    outline: 0;
+    resize: none;
+}
+
+.form__comment::placeholder {
+    font-size: 0.9rem;
+    text-align: center;
+}
+
 .options {
     margin-bottom: 30px;
     display: flex;
