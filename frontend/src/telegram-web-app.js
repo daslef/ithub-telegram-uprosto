@@ -286,7 +286,7 @@ function getWebApp() {
     var WebApp = {};
     var webAppInitData = '', webAppInitDataUnsafe = {};
     var themeParams = {}, colorScheme = 'light';
-    var webAppVersion = '6.9';
+    var webAppVersion = '7.0';
     var webAppPlatform = 'unknown';
     var webAppIsActive = true;
     var webAppIsFullscreen = false;

@@ -1,58 +1,66 @@
 import { tg } from './telegram-web-app';
 
+function timeout(ms = 3000): Promise<Error> {
+    return new Promise(reject => {
+        setTimeout(() => {
+            reject(new Error('Timeout exceeded on trying get data'))
+        }, ms)
+    })
+}
+
 export function cloudProvider() {
-    function setItem<T>(name: string, value: T): Promise<void> {
-        return new Promise((resolve, reject) => {
+    function setItem<T>(name: string, value: T): Promise<void | Error> {
+        const setPromise: Promise<void> = new Promise((resolve, reject) => {
             tg.CloudStorage.setItem(name, JSON.stringify(value), (error) => {
                 if (error) {
-                    reject(`Error on writing data:\n${error}`)
+                    reject(new Error(`Error on writing data:\n${error}`))
                 }
             })
             resolve()
         })
+
+        return Promise.race([setPromise, timeout()])
     }
 
-    function getItem<T>(name: string): Promise<T> {
-        return new Promise((resolve, reject) => {
+    function getItem<T>(name: string): Promise<T | Error> {
+        const getPromise: Promise<T> = new Promise((resolve, reject) => {
             tg.CloudStorage.getItem(name, (error, value) => {
                 if (error) {
-                    reject(`Error on getting data:\n${error}`)
+                    reject(new Error(`Error on getting data:\n${error}`))
                 }
 
-                if (value === null || value === '') {
-                    reject(`No value found for ${name}`)
+                if (!value || value === '') {
+                    reject(new Error(`No value found for ${name}`))
                 }
 
-                resolve(JSON.parse(value as string))
+                try {
+                    resolve(JSON.parse(value as string))
+                } catch (error) {
+                    reject(new Error(`Error on parsing gotten data: \n${error}`))
+                }
             })
         })
+
+        return Promise.race([getPromise, timeout()])
     }
 
-    function clear(): Promise<void> {
-        return new Promise((resolve, reject) => {
-            tg.CloudStorage.getKeys((error, keys) => {
+    function removeItem(name: string): Promise<void | Error> {
+        const removePromise: Promise<void> = new Promise((resolve, reject) => {
+            tg.CloudStorage.removeItem(name, (error, _) => {
                 if (error) {
-                    reject(`Error on clear data:\n${error}`)
+                    reject(new Error(`Error on clear data:\n${error}`))
                 }
-
-                if (!keys) {
-                    reject("No keys found in storage")
-                }
-
-                tg.CloudStorage.removeItems(keys ?? [], (error, _) => {
-                    if (error) {
-                        reject(`Error on clear data:\n${error}`)
-                    }
-                    resolve()
-                })
+                resolve()
             })
         })
+
+        return Promise.race([removePromise, timeout()])
     }
 
     return {
         setItem,
         getItem,
-        clear
+        removeItem
     }
 }
 

@@ -1,5 +1,6 @@
 import { renderPage } from "../router"
 import { categories, cloudProvider } from "../storage"
+import { tg } from "../telegram-web-app";
 import type { Storage } from '../types';
 import '../style.css'
 
@@ -32,6 +33,10 @@ export default function FormPage(categoryName: string) {
         }
     }
 
+    tg.MainButton.hide()
+    tg.SecondaryButton.hide()
+    tg.BackButton.show()
+    
     const storage: Storage = {}
 
     cloudProvider()

@@ -29,9 +29,10 @@ function renderHeader() {
 
 function renderStatus() {
     const statusElement = document.createElement('h3')
-    const tipText = 'Выберите интересующие вас категории'
+    statusElement.innerHTML = "Выберите интересующие вас категории "
+
     countCompletedCategories().then(numberCompleted => {
-        statusElement.innerHTML = `${tipText} (заполнено: <span id="selected-count">${numberCompleted}</span>/${categories.length})`
+        statusElement.innerHTML += `(заполнено: <span id="selected-count">${numberCompleted}</span>/${categories.length})`
     })
 
     return statusElement
@@ -68,29 +69,32 @@ function renderCategories() {
 }
 
 function renderButtons() {
-    const buttonsElement = document.createElement('section')
-    buttonsElement.className = 'buttons'
-
-    const generateButtonElement = document.createElement('button')
-
-    // exp
-    const mainButton = tg.MainButton
-    mainButton.setText('Сформировать пазл')
-    mainButton.show()
-    // exp
-
-    countCompletedCategories().then(count => {
-        generateButtonElement.disabled = count < categories.length
-        // exp
-        if (count < categories.length) {
-            mainButton.disable()
-        }
-        // exp
+    const mainButton = tg.MainButton.setParams({
+        text: 'Сформировать пазл',
+        color: '#364CA0',
+        text_color: '#ffffff',
+        is_active: false,
+        is_visible: false
     })
 
-    generateButtonElement.classList.add('start__button', 'start__button--primary')
-    generateButtonElement.textContent = 'Сформировать пазл'
-    generateButtonElement.addEventListener('click', () => {
+    const secondaryButton = tg.SecondaryButton.setParams({
+        text: 'Участвовать в розыгрыше',
+        color: '#c9349e',
+        text_color: '#ffffff',
+        is_active: false,
+        is_visible: false,
+        position: "bottom"
+    })
+
+    const backToStartButton = tg.BackButton
+
+    backToStartButton.onClick(() => {
+        tg.MainButton.hide()
+        tg.SecondaryButton.hide()
+        renderPage('start')
+    })
+
+    mainButton.onClick(() => {
         cloudProvider()
             .getItem<Storage>('festival')
             .then(data => tg.sendData(JSON.stringify(data)))
@@ -99,28 +103,24 @@ function renderButtons() {
             })
     })
 
-    const participateButtonElement = document.createElement('button')
-    participateButtonElement.classList.add('start__button', 'start__button--secondary')
-    participateButtonElement.textContent = 'Участвовать в розыгрыше'
-    participateButtonElement.setAttribute('disabled', 'disabled')
+    mainButton.show()
+    secondaryButton.show()
+    backToStartButton.show()
 
-    buttonsElement.append(generateButtonElement, participateButtonElement)
-    return buttonsElement
+    countCompletedCategories().then(count => {
+        if (count === categories.length) {
+            mainButton.enable()
+            secondaryButton.enable()
+        }
+    })
+
 }
 
 export default function CategoriesPage() {
+    renderButtons()
+
     const pageElement = document.createElement('article')
-
-    const backToStartButton = tg.BackButton
-    backToStartButton.onClick(() => renderPage('start'))
-    backToStartButton.show()
-
-    const h1Element = renderHeader()
-    const statusElement = renderStatus()
-    const categoriesElement = renderCategories()
-    const menuElement = renderButtons()
-
-    pageElement.append(h1Element, statusElement, categoriesElement, menuElement)
+    pageElement.append(renderHeader(), renderStatus(), renderCategories())
 
     return pageElement
 }

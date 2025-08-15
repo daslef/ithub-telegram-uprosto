@@ -1,22 +1,20 @@
 import StartPage from "./pages/start";
 import CategoriesPage from "./pages/categories";
 import ItemsPage from "./pages/items";
-import EndPage from "./pages/end";
 
 import { app } from "./script";
 
-export type Page = 'start' | 'categories' | 'items' | 'end'
+export type Page = 'start' | 'categories' | 'items'
 type Category = string | undefined
 
-export function renderPage(page: Page, category?: Category) {
+export async function renderPage(page: Page, category?: Category) {
     const pages = {
         'start': StartPage,
         'categories': CategoriesPage,
         'items': () => ItemsPage(category!),
-        'end': EndPage
     }
     app.innerHTML = ''
-    app.appendChild(pages[page]())
+    app.appendChild(await pages[page]())
 }
 
 

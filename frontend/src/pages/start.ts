@@ -1,8 +1,9 @@
 import { renderPage } from '../router'
 import { cloudProvider } from '../storage'
+import type { Storage } from '../types'
+import { tg } from '../telegram-web-app'
 import '../style.css'
 
-type Action = 'start' | 'continue' | 'reset'
 
 function renderHeader() {
     const h1Element = document.createElement('h1')
@@ -23,45 +24,54 @@ function renderHeader() {
     return [h1Element, descriptionWrapperElement]
 }
 
-function renderButtons() {
-    function generateButton(text: string, className: string, action: Action) {
-        const buttonElement = document.createElement('button')
-        buttonElement.classList.add('start__button', className)
-        buttonElement.textContent = text
-        buttonElement.addEventListener('click', () => {
-            if (action === "reset") {
-                cloudProvider().clear().finally(() => {
-                    renderPage('categories')
-                })
-            }
-            renderPage('categories')
+async function renderButtons() {
+    const mainButton = tg.MainButton.setParams({
+        text: '...',
+        color: '#364CA0',
+        text_color: '#ffffff',
+        is_active: true,
+        is_visible: false
+    })
+
+    mainButton.onClick(() => {
+        renderPage('categories')
+    })
+
+    const secondaryButton = tg.SecondaryButton.setParams({
+        text: '...',
+        color: '#c9349e',
+        text_color: '#ffffff',
+        is_active: true,
+        is_visible: false
+    })
+
+    try {
+        const data = await cloudProvider().getItem<Storage>('festival')
+
+        if (!Object.keys(data).length) {
+            throw new Error("No data found on festival")
+        }
+
+        secondaryButton.onClick(() => {
+            cloudProvider().removeItem("festival").catch(error => {
+                console.error(error)
+            }).finally(() => {
+                renderPage('categories')
+            })
         })
-        return buttonElement
+
+        mainButton.setText('Продолжить').show()
+        secondaryButton.setText('Начать сначала').show()
+    } catch (error) {
+        console.error(error)
+        mainButton.setText('Начать!').show()
     }
-
-    const buttonsElement = document.createElement('section')
-    buttonsElement.className = 'buttons'
-
-    const storage = cloudProvider().getItem('festival')
-    if (Object.keys(storage).length) {
-        buttonsElement.append(
-            generateButton('Продолжить', 'start__button--primary', 'continue'),
-            generateButton('Начать сначала', 'start__button--secondary', 'continue'),
-        )
-    } else {
-        buttonsElement.appendChild(generateButton('Начать!', 'start__button--primary', 'start'))
-    }
-
-    return buttonsElement
 }
 
-export default function StartPage() {
+export default async function StartPage(): Promise<HTMLElement> {
     const pageElement = document.createElement('article')
+    pageElement.append(...renderHeader())
 
-    const [h1Element, descriptionWrapperElement] = renderHeader()
-    const buttonsElement = renderButtons()
-
-    pageElement.append(h1Element, descriptionWrapperElement, buttonsElement)
-
+    await renderButtons()
     return pageElement
 }
