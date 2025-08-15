@@ -15,14 +15,23 @@ body {
 }
 
 .game-heading {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     text-align: center;
     color: #333;
+    font-size: 1.3rem;
+}
+
+.game-status {
+    font-size: 1.1rem;
+    font-weight: 400;
 }
 
 .game-description {
     margin-bottom: 20px;
     text-align: justify;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .categories {
