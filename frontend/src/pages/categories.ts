@@ -1,9 +1,24 @@
 import menuSvg from '../assets/jigsaw.svg?raw'
 
 import { renderPage } from '../router'
-import { categories } from '../data'
-import { tg } from '../telegram-web-app'
+import { categories } from '../storage'
+import { tg } from '../telegram-web-app';
+import { cloudProvider } from '../storage';
+import type { Storage } from '../types';
+
 import '../style.css'
+
+function countCompletedCategories(): Promise<number> {
+    return new Promise((resolve) => {
+        cloudProvider()
+            .getItem<Storage>('festival')
+            .then(data => resolve(Object.keys(data).length))
+            .catch(error => {
+                console.log(error)
+                resolve(0)
+            })
+    })
+}
 
 function renderHeader() {
     const h1Element = document.createElement('h1')
@@ -15,7 +30,9 @@ function renderHeader() {
 function renderStatus() {
     const statusElement = document.createElement('h3')
     const tipText = 'Выберите интересующие вас категории'
-    statusElement.innerHTML = `${tipText} (заполнено: <span id="selected-count">${(window as any).completed.length ?? 0}</span>/${categories.length})`
+    countCompletedCategories().then(numberCompleted => {
+        statusElement.innerHTML = `${tipText} (заполнено: <span id="selected-count">${numberCompleted}</span>/${categories.length})`
+    })
 
     return statusElement
 }
@@ -25,12 +42,17 @@ function renderCategories() {
     categoriesElement.innerHTML = menuSvg
     categoriesElement.className = 'categories'
 
+    const completedCategories: string[] = []
+    cloudProvider().getItem<Storage>('festival').then(data => {
+        completedCategories.push(...Object.keys(data))
+    })
+
     for (const { id, category } of categories) {
         const buttonElement = categoriesElement.querySelector(`#${id}`)!
         buttonElement.classList.add('category')
         const iconDone = buttonElement.querySelector('.icon-done')!
 
-        if ((window as any).completed?.includes(id)) {
+        if (completedCategories.includes(id)) {
             buttonElement.classList.add('disabled')
             iconDone.classList.add('show')
         }
@@ -50,24 +72,31 @@ function renderButtons() {
     buttonsElement.className = 'buttons'
 
     const generateButtonElement = document.createElement('button')
-    generateButtonElement.disabled = (window as any).completed.length < categories.length
+
+    // exp
+    const mainButton = tg.MainButton
+    mainButton.setText('Сформировать пазл')
+    mainButton.show()
+    // exp
+
+    countCompletedCategories().then(count => {
+        generateButtonElement.disabled = count < categories.length
+        // exp
+        if (count < categories.length) {
+            mainButton.disable()
+        }
+        // exp
+    })
+
     generateButtonElement.classList.add('start__button', 'start__button--primary')
     generateButtonElement.textContent = 'Сформировать пазл'
     generateButtonElement.addEventListener('click', () => {
-        try {
-            tg.CloudStorage.getItem('festival', (error, value) => {
-                if (error) {
-                    throw new Error(error)
-                }
-                if (value === null || value === '') {
-                    throw new Error("No value received")
-                }
-
-                tg.sendData(value);
+        cloudProvider()
+            .getItem<Storage>('festival')
+            .then(data => tg.sendData(JSON.stringify(data)))
+            .catch(error => {
+                console.error(error)
             })
-        } catch (error) {
-            console.error(error)
-        }
     })
 
     const participateButtonElement = document.createElement('button')
@@ -79,8 +108,12 @@ function renderButtons() {
     return buttonsElement
 }
 
-export default function StartPage() {
+export default function CategoriesPage() {
     const pageElement = document.createElement('article')
+
+    const backToStartButton = tg.BackButton
+    backToStartButton.onClick(() => renderPage('start'))
+    backToStartButton.show()
 
     const h1Element = renderHeader()
     const statusElement = renderStatus()

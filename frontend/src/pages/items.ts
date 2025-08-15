@@ -1,6 +1,6 @@
-import { tg } from "../telegram-web-app"
 import { renderPage } from "../router"
-import { categories } from "../data"
+import { categories, cloudProvider } from "../storage"
+import type { Storage } from '../types';
 import '../style.css'
 
 
@@ -32,43 +32,17 @@ export default function FormPage(categoryName: string) {
         }
     }
 
-    const storage: string[] = []
-    const storage_comments: string[] = []
+    const storage: Storage = {}
 
-    try {
-        tg.CloudStorage.getItem('festival', (error, value) => {
-            if (error) {
-                throw new Error(error)
-            }
-            if (value === null || value === '') {
-                throw new Error("No value received")
-            }
-
-            console.log(value, JSON.parse(value))
-            return storage.push(...JSON.parse(value))
+    cloudProvider()
+        .getItem<Storage>('festival')
+        .then(value => {
+            Object.assign(storage, value)
+            console.log(storage)
         })
-    } catch (error) {
-        console.error(error)
-    }
-
-    try {
-        tg.CloudStorage.getItem('festival_comments', (error, value) => {
-            if (error) {
-                throw new Error(error)
-            }
-            if (value === null || value === '') {
-                throw new Error("No value received")
-            }
-
-            console.log(value, JSON.parse(value))
-            return storage_comments.push(...JSON.parse(value))
+        .catch(error => {
+            console.error(error)
         })
-    } catch (error) {
-        console.error(error)
-    }
-
-
-    console.log(storage, storage_comments)
 
     const categoryData = categories.find(({ category }) => category === categoryName)
 
@@ -87,7 +61,7 @@ export default function FormPage(categoryName: string) {
         inputElement.className = 'title-inp'
         inputElement.value = item.id
         inputElement.type = 'checkbox'
-        inputElement.checked = storage?.includes(item.id)
+        inputElement.checked = storage[categoryData!.id]?.items?.includes(item.id) ?? false
         inputElement.addEventListener('input', onInput)
 
         const labelElement = document.createElement('label')
@@ -113,32 +87,22 @@ export default function FormPage(categoryName: string) {
 
     formElement.addEventListener("submit", (event) => {
         event.preventDefault()
-        const values = getCheckedElements(formElement).filter(({ tagName }) => tagName === "INPUT").map(({ value }) => value);
-        const comment = formElement.querySelector('textarea')
-        if (comment?.value && comment.value.length > 3) {
-            try {
-                tg.CloudStorage.setItem('festival_comments', JSON.stringify([...storage_comments, comment.value]), (error) => {
-                    if (error) {
-                        throw new Error(`Error on writing data ${error}`)
-                    }
-                })
-            } catch (error) {
-                console.error(error)
-            }
-        }
 
-        console.log(event, values, comment?.value);
-        (window as any).completed.push(categoryData?.id)
+        const commentElement = formElement.querySelector('textarea')
+        const commentValue = commentElement?.value && commentElement.value.length > 3 ? commentElement.value : ""
+        const itemsValue = getCheckedElements(formElement).filter(({ tagName }) => tagName === "INPUT").map(({ value }) => value);
 
-        try {
-            tg.CloudStorage.setItem('festival', JSON.stringify([...storage, { [categoryData!.id]: values }]), (error) => {
-                if (error) {
-                    throw new Error(`Error on writing data ${error}`)
+        cloudProvider()
+            .setItem<Storage>('festival', {
+                ...storage,
+                [categoryData!.id]: {
+                    items: itemsValue,
+                    comment: commentValue
                 }
             })
-        } catch (error) {
-            console.error(error)
-        }
+            .catch(error => {
+                console.log(error)
+            });
 
         renderPage('categories')
     });

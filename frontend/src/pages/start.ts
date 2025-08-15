@@ -1,4 +1,5 @@
 import { renderPage } from '../router'
+import { cloudProvider } from '../storage'
 import '../style.css'
 
 type Action = 'start' | 'continue' | 'reset'
@@ -29,7 +30,9 @@ function renderButtons() {
         buttonElement.textContent = text
         buttonElement.addEventListener('click', () => {
             if (action === "reset") {
-                (window as any).completed = []
+                cloudProvider().clear().finally(() => {
+                    renderPage('categories')
+                })
             }
             renderPage('categories')
         })
@@ -39,7 +42,8 @@ function renderButtons() {
     const buttonsElement = document.createElement('section')
     buttonsElement.className = 'buttons'
 
-    if ((window as any).completed.length) {
+    const storage = cloudProvider().getItem('festival')
+    if (Object.keys(storage).length) {
         buttonsElement.append(
             generateButton('Продолжить', 'start__button--primary', 'continue'),
             generateButton('Начать сначала', 'start__button--secondary', 'continue'),
