@@ -17,8 +17,8 @@ function getCompletedCategories(): Promise<string[]> {
 }
 
 function renderStatus(completedCount: number) {
-    const statusElement = document.querySelector('.game-status')!
-    statusElement.innerHTML += `(заполнено: ${completedCount}/${categories.length})`
+    const statusElement = document.querySelector('.game-status > span')!
+    statusElement.innerHTML = `(заполнено: ${completedCount}/${categories.length})`
 }
 
 function renderCategories(completedCategories: string[]) {
@@ -43,20 +43,21 @@ function renderCategories(completedCategories: string[]) {
 }
 
 function renderButtons(completedCount: number) {
-    function cleanButtonHandlers() {
-        backToStartButton.offClick(navigateBack)
-        mainButton.offClick(sendPuzzleData)
-        secondaryButton.offClick(navigateToLottery)
+    function cleanButtons() {
+        backToStartButton.hide()
+        mainButton.hide().disable().offClick(sendPuzzleData)
+        secondaryButton.hide().disable().offClick(navigateToLottery)
     }
 
     function navigateBack() {
         mainButton.hide()
         secondaryButton.hide()
-        cleanButtonHandlers()
+        cleanButtons()
         renderPage('start')
     }
 
     function navigateToLottery() {
+        cleanButtons()
         return
     }
 
@@ -68,7 +69,7 @@ function renderButtons(completedCount: number) {
                 console.error(error)
             })
             .finally(() => {
-                cleanButtonHandlers()
+                cleanButtons()
             })
     }
 

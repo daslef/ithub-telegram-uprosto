@@ -30,12 +30,6 @@ function renderEntry(item: Company, checked = false) {
     return labelElement
 }
 
-function hideButtons() {
-    tg.MainButton.hide()
-    tg.SecondaryButton.hide()
-    tg.BackButton.show()
-}
-
 export default function FormPage(categoryName: string) {
     function onInput() {
         const button = formElement.querySelector('.form__button') as HTMLButtonElement
@@ -70,9 +64,10 @@ export default function FormPage(categoryName: string) {
             })
             .catch(error => {
                 console.log(error)
-            });
-
-        renderPage('categories')
+            })
+            .finally(() => {
+                renderPage('categories')
+            })
     }
 
     const storage: Storage = {}
@@ -87,7 +82,8 @@ export default function FormPage(categoryName: string) {
     formElement.addEventListener('input', onInput)
     formElement.addEventListener("submit", onSubmit);
 
-    hideButtons()
+    onInput()
+    tg.BackButton.show()
 
     cloudProvider()
         .getItem<Storage>('festival')

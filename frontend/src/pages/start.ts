@@ -5,13 +5,13 @@ import { tg } from '../telegram-web-app'
 
 
 async function renderButtons() {
-    function cleanButtonHandlers() {
-        mainButton.offClick(navigateToCategories)
-        secondaryButton.offClick(resetAndNavigateToCategories)
+    function cleanButtons() {
+        mainButton.hide().disable().offClick(navigateToCategories)
+        secondaryButton.hide().disable().offClick(resetAndNavigateToCategories)
     }
 
     function navigateToCategories() {
-        cleanButtonHandlers()
+        cleanButtons()
         renderPage('categories')
     }
 
@@ -19,7 +19,7 @@ async function renderButtons() {
         cloudProvider().removeItem("festival").catch(error => {
             console.error(error)
         }).finally(() => {
-            cleanButtonHandlers()
+            cleanButtons()
             renderPage('categories')
         })
     }
@@ -28,7 +28,7 @@ async function renderButtons() {
         text: 'Продолжить',
         color: '#364CA0',
         text_color: '#ffffff',
-        is_active: true,
+        is_active: false,
         is_visible: false
     })
 
@@ -36,7 +36,7 @@ async function renderButtons() {
         text: 'Начать сначала',
         color: '#c9349e',
         text_color: '#ffffff',
-        is_active: true,
+        is_active: false,
         is_visible: false
     })
 
@@ -50,11 +50,11 @@ async function renderButtons() {
             throw new Error("No data found on festival")
         }
 
-        mainButton.show()
-        secondaryButton.show()
+        mainButton.enable().show()
+        secondaryButton.enable().show()
     } catch (error) {
         console.error(error)
-        mainButton.setText('Начать!').show()
+        mainButton.setText('Начать!').enable().show()
     }
 }
 

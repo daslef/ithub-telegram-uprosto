@@ -32,5 +32,5 @@ export async function renderPage(page: Page, category?: Category) {
     await pageFn()
 }
 
-await renderPage('items', "Дошкольное развитие");
+await renderPage("categories");
 
