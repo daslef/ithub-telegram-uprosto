@@ -1,0 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: white;
+    font-family: "Andika", sans-serif;
+    margin: 0;
+    padding: 25px 20px 10px;
+    text-align: center;
+}
+
+.game-heading {
+    margin-bottom: 30px;
+    text-align: center;
+    color: #333;
+}
+
+.game-description {
+    margin-bottom: 20px;
+    text-align: justify;
+}
+
+.categories {
+    margin-top: 25px;
+    margin-bottom: 30px;
+}
+
+.category {
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.category.disabled {
+    pointer-events: initial;
+}
+
+.category.disabled .st6 {
+    fill: #FDF5E5;
+}
+
+.category:hover .st6 {
+    fill: white;
+    transform: scale(1.01)
+}
+
+.form {
+    background: #fff;
+    border-radius: 8px;
+    width: max-content;
+    margin: 0 auto;
+}
+
+.form__heading {
+    margin-bottom: 30px;
+}
+
+.form__comment {
+    padding: 0.5rem;
+    font-size: 1rem;
+    outline: 0;
+    resize: none;
+}
+
+.form__comment::placeholder {
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.form__options {
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.option {
+    display: flex;
+    gap: 6px;
+}
+
+.form__button {
+    appearance: none;
+    padding: 10px 20px;
+    background: #007bff;
+    color: #fff;
+    border: transparent;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.form__button:hover {
+    background: #0056b3;
+}
+
+.form__button:disabled {
+    pointer-events: none;
+    cursor: default;
+    opacity: 0.6;
+}
