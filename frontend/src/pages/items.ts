@@ -1,8 +1,7 @@
 import { renderPage } from "../router"
 import { categories, cloudProvider } from "../storage"
 import { tg } from "../telegram-web-app";
-import type { Storage } from '../types';
-import '../style.css'
+import type { Storage, Company } from '../types';
 
 
 function getCheckedElements(formElement: HTMLFormElement) {
@@ -16,84 +15,48 @@ function getCheckedElements(formElement: HTMLFormElement) {
         })
 }
 
+function renderEntry(item: Company, checked = false) {
+    const inputElement = document.createElement('input')
+    inputElement.className = 'title-inp'
+    inputElement.value = item.id
+    inputElement.type = 'checkbox'
+    inputElement.checked = checked
+
+    const labelElement = document.createElement('label')
+    labelElement.className = 'option'
+    labelElement.textContent = item.title
+    labelElement.prepend(inputElement)
+
+    return labelElement
+}
+
+function hideButtons() {
+    tg.MainButton.hide()
+    tg.SecondaryButton.hide()
+    tg.BackButton.show()
+}
+
 export default function FormPage(categoryName: string) {
     function onInput() {
-        const button = formElement.querySelector('button')
+        const button = formElement.querySelector('.form__button') as HTMLButtonElement
         const checkedNumber = getCheckedElements(formElement).filter(({ tagName }) => tagName === "INPUT").length
-        button!.disabled = checkedNumber === 0
+        button.disabled = checkedNumber === 0
 
         if (checkedNumber === 3) {
-            for (const element of divElement.querySelectorAll('input:not(:checked)')) {
+            for (const element of optionsElement.querySelectorAll('input:not(:checked)')) {
                 element.setAttribute('disabled', 'disabled')
             }
         } else {
-            for (const element of divElement.querySelectorAll('input')) {
+            for (const element of optionsElement.querySelectorAll('input')) {
                 element.removeAttribute('disabled')
             }
         }
     }
 
-    tg.MainButton.hide()
-    tg.SecondaryButton.hide()
-    tg.BackButton.show()
-    
-    const storage: Storage = {}
-
-    cloudProvider()
-        .getItem<Storage>('festival')
-        .then(value => {
-            Object.assign(storage, value)
-            console.log(storage)
-        })
-        .catch(error => {
-            console.error(error)
-        })
-
-    const categoryData = categories.find(({ category }) => category === categoryName)
-
-    const formElement = document.createElement('form')
-    formElement.className = 'form'
-
-    const formHeading = document.createElement('h2')
-    formHeading.textContent = categoryName
-    formHeading.className = "form__heading"
-
-    const divElement = document.createElement('section')
-    divElement.className = "options"
-
-    for (const item of categoryData!.items) {
-        const inputElement = document.createElement('input')
-        inputElement.className = 'title-inp'
-        inputElement.value = item.id
-        inputElement.type = 'checkbox'
-        inputElement.checked = storage[categoryData!.id]?.items?.includes(item.id) ?? false
-        inputElement.addEventListener('input', onInput)
-
-        const labelElement = document.createElement('label')
-        labelElement.className = 'option'
-        labelElement.textContent = item.title
-        labelElement.prepend(inputElement)
-
-        divElement.appendChild(labelElement)
-    }
-
-    const comments = document.createElement('textarea')
-    comments.className = "form__comments"
-    comments.rows = 5
-    comments.placeholder = "Не хватило? Оставьте комментарий!"
-    comments.className = "form__comment"
-    comments.addEventListener('input', onInput)
-    divElement.append(comments)
-
-    const buttonElement = document.createElement('button')
-    buttonElement.classList.add('form__button')
-    buttonElement.disabled = true
-    buttonElement.textContent = 'Отправить'
-
-    formElement.addEventListener("submit", (event) => {
+    function onSubmit(event: SubmitEvent) {
         event.preventDefault()
 
-        const commentElement = formElement.querySelector('textarea')
+        const commentElement = formElement.querySelector('.form__comment') as HTMLTextAreaElement
         const commentValue = commentElement?.value && commentElement.value.length > 3 ? commentElement.value : ""
         const itemsValue = getCheckedElements(formElement).filter(({ tagName }) => tagName === "INPUT").map(({ value }) => value);
 
@@ -110,9 +73,35 @@ export default function FormPage(categoryName: string) {
             });
 
         renderPage('categories')
-    });
+    }
 
+    const storage: Storage = {}
 
-    formElement.append(formHeading, divElement, buttonElement)
-    return formElement
+    const categoryData = categories.find(({ category }) => category === categoryName)
+    const formElement = document.querySelector('.form') as HTMLFormElement
+    const formHeading = document.querySelector(".form__heading") as HTMLHeadingElement
+    const optionsElement = document.querySelector('.form__options') as HTMLDivElement
+
+    formHeading.textContent = categoryName
+
+    formElement.addEventListener('input', onInput)
+    formElement.addEventListener("submit", onSubmit);
+
+    hideButtons()
+
+    cloudProvider()
+        .getItem<Storage>('festival')
+        .then(value => {
+            Object.assign(storage, value)
+            console.log(storage)
+        })
+        .catch(error => {
+            console.error(error)
+        })
+        .finally(() => {
+            for (const item of categoryData!.items) {
+                const isChecked = storage[categoryData!.id]?.items?.includes(item.id) ?? false
+                optionsElement.prepend(renderEntry(item, isChecked))
+            }
+        })
 }

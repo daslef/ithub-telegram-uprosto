@@ -1,52 +1,28 @@
-import menuSvg from '../assets/jigsaw.svg?raw'
-
 import { renderPage } from '../router'
 import { categories } from '../storage'
 import { tg } from '../telegram-web-app';
 import { cloudProvider } from '../storage';
 import type { Storage } from '../types';
 
-import '../style.css'
-
-function countCompletedCategories(): Promise<number> {
+function getCompletedCategories(): Promise<string[]> {
     return new Promise((resolve) => {
         cloudProvider()
             .getItem<Storage>('festival')
-            .then(data => resolve(Object.keys(data).length))
+            .then(data => resolve(Object.keys(data)))
             .catch(error => {
                 console.log(error)
-                resolve(0)
+                resolve([])
             })
     })
 }
 
-function renderHeader() {
-    const h1Element = document.createElement('h1')
-    h1Element.textContent = 'Собери свой образовательный пазл'
-
-    return h1Element
+function renderStatus(completedCount: number) {
+    const statusElement = document.querySelector('.game-status')!
+    statusElement.innerHTML += `(заполнено: ${completedCount}/${categories.length})`
 }
 
-function renderStatus() {
-    const statusElement = document.createElement('h3')
-    statusElement.innerHTML = "Выберите интересующие вас категории "
-
-    countCompletedCategories().then(numberCompleted => {
-        statusElement.innerHTML += `(заполнено: <span id="selected-count">${numberCompleted}</span>/${categories.length})`
-    })
-
-    return statusElement
-}
-
-function renderCategories() {
-    const categoriesElement = document.createElement('section')
-    categoriesElement.innerHTML = menuSvg
-    categoriesElement.className = 'categories'
-
-    const completedCategories: string[] = []
-    cloudProvider().getItem<Storage>('festival').then(data => {
-        completedCategories.push(...Object.keys(data))
-    })
+function renderCategories(completedCategories: string[]) {
+    const categoriesElement = document.querySelector('.categories')!
 
     for (const { id, category } of categories) {
         const buttonElement = categoriesElement.querySelector(`#${id}`)!
@@ -64,11 +40,38 @@ function renderCategories() {
             })
         }
     }
-
-    return categoriesElement
 }
 
-function renderButtons() {
+function renderButtons(completedCount: number) {
+    function cleanButtonHandlers() {
+        backToStartButton.offClick(navigateBack)
+        mainButton.offClick(sendPuzzleData)
+        secondaryButton.offClick(navigateToLottery)
+    }
+
+    function navigateBack() {
+        mainButton.hide()
+        secondaryButton.hide()
+        cleanButtonHandlers()
+        renderPage('start')
+    }
+
+    function navigateToLottery() {
+        return
+    }
+
+    function sendPuzzleData() {
+        cloudProvider()
+            .getItem<Storage>('festival')
+            .then(data => tg.sendData(JSON.stringify(data)))
+            .catch(error => {
+                console.error(error)
+            })
+            .finally(() => {
+                cleanButtonHandlers()
+            })
+    }
+
     const mainButton = tg.MainButton.setParams({
         text: 'Сформировать пазл',
         color: '#364CA0',
@@ -88,39 +91,24 @@ function renderButtons() {
 
     const backToStartButton = tg.BackButton
 
-    backToStartButton.onClick(() => {
-        tg.MainButton.hide()
-        tg.SecondaryButton.hide()
-        renderPage('start')
-    })
-
-    mainButton.onClick(() => {
-        cloudProvider()
-            .getItem<Storage>('festival')
-            .then(data => tg.sendData(JSON.stringify(data)))
-            .catch(error => {
-                console.error(error)
-            })
-    })
+    backToStartButton.onClick(navigateBack)
+    mainButton.onClick(sendPuzzleData)
+    secondaryButton.onClick(navigateToLottery)
 
     mainButton.show()
     secondaryButton.show()
     backToStartButton.show()
 
-    countCompletedCategories().then(count => {
-        if (count === categories.length) {
-            mainButton.enable()
-            secondaryButton.enable()
-        }
-    })
-
+    if (completedCount === categories.length) {
+        mainButton.enable()
+        secondaryButton.enable()
+    }
 }
 
-export default function CategoriesPage() {
-    renderButtons()
+export default async function CategoriesPage() {
+    const completedCategories = await getCompletedCategories()
 
-    const pageElement = document.createElement('article')
-    pageElement.append(renderHeader(), renderStatus(), renderCategories())
-
-    return pageElement
+    renderStatus(completedCategories.length)
+    renderButtons(completedCategories.length)
+    renderCategories(completedCategories)
 }

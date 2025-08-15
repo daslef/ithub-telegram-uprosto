@@ -14,20 +14,7 @@ body {
     text-align: center;
 }
 
-button {
-    appearance: none;
-    cursor: pointer;
-    border: transparent;
-}
-
-.form__button:disabled,
-button:disabled {
-    pointer-events: none;
-    cursor: default;
-    opacity: 0.6;
-}
-
-h1 {
+.game-heading {
     margin-bottom: 30px;
     text-align: center;
     color: #333;
@@ -60,6 +47,7 @@ h1 {
 }
 
 .category:hover .st6 {
+    fill: white;
     transform: scale(1.01)
 }
 
@@ -86,7 +74,7 @@ h1 {
     text-align: center;
 }
 
-.options {
+.form__options {
     margin-bottom: 30px;
     display: flex;
     flex-direction: column;
@@ -99,10 +87,11 @@ h1 {
 }
 
 .form__button {
+    appearance: none;
     padding: 10px 20px;
     background: #007bff;
     color: #fff;
-    border: none;
+    border: transparent;
     border-radius: 5px;
     cursor: pointer;
 }
@@ -111,23 +100,8 @@ h1 {
     background: #0056b3;
 }
 
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-.form-group input,
-.form-group select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.svg-menu {
-    width: 100%;
+.form__button:disabled {
+    pointer-events: none;
+    cursor: default;
+    opacity: 0.6;
 }
