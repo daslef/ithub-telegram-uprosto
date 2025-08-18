@@ -57,7 +57,7 @@ function renderButtons(completedCount: number) {
 
     function navigateToLottery() {
         cleanButtons()
-        return
+        renderPage("lottery")
     }
 
     function sendPuzzleData() {
@@ -95,13 +95,11 @@ function renderButtons(completedCount: number) {
     mainButton.onClick(sendPuzzleData)
     secondaryButton.onClick(navigateToLottery)
 
-    mainButton.show()
-    secondaryButton.show()
     backToStartButton.show()
 
     if (completedCount === categories.length) {
-        mainButton.enable()
-        secondaryButton.enable()
+        mainButton.enable().show()
+        secondaryButton.enable().show()
     }
 }
 

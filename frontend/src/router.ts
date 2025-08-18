@@ -1,8 +1,9 @@
 import StartPage from "./pages/start";
 import CategoriesPage from "./pages/categories";
 import ItemsPage from "./pages/items";
+import LotteryPage from "./pages/lottery";
 
-export type Page = 'start' | 'categories' | 'items'
+export type Page = 'start' | 'categories' | 'items' | 'lottery'
 type Category = string | undefined
 
 export async function renderPage(page: Page, category?: Category) {
@@ -19,6 +20,11 @@ export async function renderPage(page: Page, category?: Category) {
             pageFn: () => ItemsPage(category!),
             templateId: "items"
         },
+        'lottery': {
+            pageFn: LotteryPage,
+            templateId: "lottery"
+        },
+
     }
 
     const { pageFn, templateId } = pages[page]

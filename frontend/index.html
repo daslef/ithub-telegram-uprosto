@@ -292,6 +292,59 @@
         </form>
     </template>
 
+    <template id="lottery">
+        <h1 class="game-heading">Участие в розыгрыше призов</h1>
+        <details class="lottery-container">
+            <summary class="lottery-summary">
+                <h3 class="lottery-subheading">Выберите удобный слот</h3>
+
+                <div class="lottery-tile-group">
+                    <div class="lottery-input-container" data-date="7">
+                        <input id="date-1" class="lottery-radio-button" type="radio" name="date" />
+                        <div class="lottery-radio-tile">
+                            <div class="lottery-icon">
+                                7
+                            </div>
+                            <label for="date-1" class="lottery-tile-label">Сентября</label>
+                        </div>
+                    </div>
+
+                    <div class="lottery-input-container" data-date="20">
+                        <input id="date-2" class="lottery-radio-button" type="radio" name="date" />
+                        <div class="lottery-radio-tile">
+                            <div class="lottery-icon">
+                                8
+                            </div>
+                            <label for="date-2" class="lottery-tile-label">Сентября</label>
+                        </div>
+                    </div>
+
+                </div>
+            </summary>
+
+            <div class="lottery-tile-group">
+                <div class="lottery-input-container mini" data-date="7" data-time="13:50">
+                    <input id="time-1" class="lottery-radio-button" type="radio" name="time" />
+                    <div class="lottery-radio-tile">
+                        <label for="time-1" class="lottery-tile-label">13:50</label>
+                    </div>
+                </div>
+                <div class="lottery-input-container mini" data-date="7" data-time="15:50">
+                    <input id="time-2" class="lottery-radio-button" type="radio" name="time" />
+                    <div class="lottery-radio-tile">
+                        <label for="time-2" class="lottery-tile-label">15:50</label>
+                    </div>
+                </div>
+                <div class="lottery-input-container mini" data-date="7" data-time="18:10">
+                    <input id="time-3" class="lottery-radio-button" type="radio" name="time" />
+                    <div class="lottery-radio-tile">
+                        <label for="time-3" class="lottery-tile-label">18:10</label>
+                    </div>
+                </div>
+            </div>
+        </details>
+    </template>
+
     <main id="app"></main>
     <script type="module" src="./src/router.ts"></script>
 </body>
