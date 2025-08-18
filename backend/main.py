@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import json
+import datetime
 
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
@@ -9,6 +10,8 @@ from aiogram.filters import CommandStart
 from aiogram.enums.parse_mode import ParseMode
 
 from config import settings
+from database.models.company import CompanyRecord
+from generate_pdf import generate_pdf
 
 logging.basicConfig(level=logging.INFO)
 
@@ -32,11 +35,27 @@ async def start(message: types.Message):
 @dp.message(F.content_type == ContentType.WEB_APP_DATA)
 async def parse_data(message: types.Message):
     data = json.loads(message.web_app_data.data)
-    print(data)
-    await message.answer(
-        f"<b>Data</b>\n\n<code>{json.dumps(data)}</code>",
-        parse_mode=ParseMode.HTML,
+
+    CompanyRecord.add_many(
+        message.from_user.username,
+        [
+            company_id
+            for category_values in data.values()
+            for company_id in category_values["items"]
+        ],
     )
+
+    filename = (
+        f"{message.from_user.username}_brochure_{datetime.datetime.now().isoformat(timespec="minutes")}.pdf"
+    )
+    user_records = CompanyRecord.get_by_username(message.from_user.username)
+
+    generate_pdf(
+        user_records,
+        filename,
+    )
+
+    await message.answer_document(types.FSInputFile(path=filename))
 
 
 @dp.message(F.text == "Посмотреть карту фестиваля")

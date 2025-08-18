@@ -44,6 +44,24 @@ class CompanyRecord(BaseModel):
         except Exception:
             print(f"No company with id {company_id}")
 
+    def add_many(username: str, company_ids: list[str]):
+        try:
+            rows_to_insert = [
+                {
+                    "company": Company.get_by_id(company_id),
+                    "username": username,
+                    "created_at": datetime.datetime.now(),
+                }
+                for company_id in company_ids
+            ]
+            return CompanyRecord.insert_many(rows_to_insert).execute()
+
+        except IntegrityError:
+            print("Record already exists")
+
+        except Exception as e:
+            print(e)
+
     def get_all():
         try:
             return list(
