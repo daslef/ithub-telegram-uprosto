@@ -31,6 +31,12 @@ function renderEntry(item: Company, checked = false) {
 }
 
 export default function FormPage(categoryName: string) {
+    function navigateBack() {
+        backToCategoriesButton.hide()
+        backToCategoriesButton.offClick(navigateBack)
+        renderPage("categories")
+    }
+
     function onInput() {
         const button = formElement.querySelector('.form__button') as HTMLButtonElement
         const checkedNumber = getCheckedElements(formElement).filter(({ tagName }) => tagName === "INPUT").length
@@ -83,7 +89,10 @@ export default function FormPage(categoryName: string) {
     formElement.addEventListener("submit", onSubmit);
 
     onInput()
-    tg.BackButton.show()
+
+    const backToCategoriesButton = tg.BackButton
+    backToCategoriesButton.show()
+    backToCategoriesButton.onClick(navigateBack)
 
     cloudProvider()
         .getItem<Storage>('festival')

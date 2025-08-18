@@ -45,13 +45,12 @@ function renderCategories(completedCategories: string[]) {
 function renderButtons(completedCount: number) {
     function cleanButtons() {
         backToStartButton.hide()
+        backToStartButton.offClick(navigateBack)
         mainButton.hide().disable().offClick(sendPuzzleData)
         secondaryButton.hide().disable().offClick(navigateToLottery)
     }
 
     function navigateBack() {
-        mainButton.hide()
-        secondaryButton.hide()
         cleanButtons()
         renderPage('start')
     }
