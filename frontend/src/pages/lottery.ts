@@ -7,50 +7,55 @@ type DatetimeObject = {
     minute: number
 }
 
-function renderButtons() {
-    function cleanButtons() {
-        backToCategoriesButton.hide()
-        backToCategoriesButton.offClick(navigateBackToCategories)
-        registerButton.hide().disable().offClick(sendLotteryData)
-    }
-
-    function navigateBackToCategories() {
-        cleanButtons()
-        renderPage('categories')
-    }
-
-    function sendLotteryData() {
-        // cloudProvider()
-        //     .getItem<Storage>('festival')
-        //     .then(data => tg.sendData(JSON.stringify(data)))
-        //     .catch(error => {
-        //         console.error(error)
-        //     })
-        //     .finally(() => {
-        //         cleanButtons()
-        //     })
-    }
-
-    const registerButton = tg.MainButton.setParams({
-        text: 'Отправить данные',
-        color: '#364CA0',
-        text_color: '#ffffff',
-        is_active: false,
-        is_visible: false
-    })
-
-    const backToCategoriesButton = tg.BackButton
-
-    backToCategoriesButton.onClick(navigateBackToCategories)
-    registerButton.onClick(sendLotteryData)
-
-    backToCategoriesButton.show()
-
-    return { registerButton }
-}
-
-
 export default function LotteryPage() {
+    function renderButtons() {
+        function cleanButtons() {
+            backToCategoriesButton.hide()
+            backToCategoriesButton.offClick(navigateBackToCategories)
+            registerButton.hide().disable().offClick(sendLotteryData)
+        }
+
+        function navigateBackToCategories() {
+            cleanButtons()
+            renderPage('categories')
+        }
+
+        function sendLotteryData() {
+            tg.requestContact((success, response) => {
+                if (success) {
+                    const contact = (response as RequestContactResponseSent).responseUnsafe.contact
+                    tg.showPopup({ title: `Заявка принята`, message: `${contact.first_name} ${contact.last_name ?? ""} (${contact.phone_number}), Вы зарегистрированы на ${registrationDatetime}` })
+                }
+            })
+            // cloudProvider()
+            //     .getItem<Storage>('festival')
+            //     .then(data => tg.sendData(JSON.stringify(data)))
+            //     .catch(error => {
+            //         console.error(error)
+            //     })
+            //     .finally(() => {
+            //         cleanButtons()
+            //     })
+        }
+
+        const registerButton = tg.MainButton.setParams({
+            text: 'Отправить данные',
+            color: '#364CA0',
+            text_color: '#ffffff',
+            is_active: false,
+            is_visible: false
+        })
+
+        const backToCategoriesButton = tg.BackButton
+
+        backToCategoriesButton.onClick(navigateBackToCategories)
+        registerButton.onClick(sendLotteryData)
+
+        backToCategoriesButton.show()
+
+        return { registerButton }
+    }
+
     function showTimeslots(event: MouseEvent | TouchEvent) {
         detailsElement.open = true
 
@@ -108,6 +113,8 @@ export default function LotteryPage() {
     const dateContainers = document.querySelectorAll<HTMLElement>('.lottery-summary .lottery-input-container')
     const timeContainers = document.querySelectorAll<HTMLElement>('.lottery-container > div > .lottery-input-container')
 
+    let registrationDatetime: string | null = null
+
     for (const dateContainer of dateContainers) {
         const date = dateContainer.dataset.date
         if (date && isDatePassed(Number(date))) {
@@ -119,7 +126,9 @@ export default function LotteryPage() {
     for (const timeContainer of timeContainers) {
         timeContainer.addEventListener('click', (event: MouseEvent | TouchEvent) => {
             const eventTarget = event.target as HTMLElement
-            if (eventTarget.parentElement!.dataset.date && eventTarget.parentElement!.dataset.time) {
+
+            registrationDatetime = `${eventTarget.parentElement!.dataset.date} августа, ${eventTarget.parentElement!.dataset.time}`
+            if (registrationDatetime) {
                 registerButton.enable().show()
             }
         })
