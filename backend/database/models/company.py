@@ -66,10 +66,14 @@ class CompanyRecord(BaseModel):
         try:
             return list(
                 CompanyRecord.select(
-                    Company.name.alias("company"), CompanyRecord.username
+                    CompanyRecord.username,
+                    Company.name.alias("company"),
+                    CompanyCategory.name.alias("category"),
+                    CompanyRecord.created_at,
                 )
                 .join(Company)
-                .order_by(Company.name)
+                .join(CompanyCategory)
+                .order_by(CompanyCategory.name, CompanyRecord.created_at)
                 .dicts()
             )
         except Exception as e:

@@ -9,5 +9,7 @@ dependencies = [
     "fonttools>=4.59.1",
     "fpdf2>=2.8.4",
     "peewee>=3.18.2",
+    "prettytable>=3.16.0",
     "pydantic-settings>=2.10.1",
+    "xlsxwriter>=3.2.5",
 ]

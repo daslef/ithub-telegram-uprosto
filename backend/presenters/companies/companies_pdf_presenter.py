@@ -1,85 +1,33 @@
 from itertools import groupby
-from pathlib import Path
-from database.models.company import CompanyRecord
+from presenters.base.pdf_builder import PDFBuilder
+from presenters.abc import AbstractPresenter
 
-from fpdf import FPDF
+# LotteryData = TypedDict("LotteryData", {"username": str, "date": str, "time": str})
 
 
-class PDF(FPDF):
-    def header(self):
-        self.set_font_size(16)
+class CompaniesPDFPresenter(AbstractPresenter):
+    def _preformat_data(data):
+        def by_category(item):
+            return item["category"]
 
-        # Calculating width of title and setting cursor position:
-        width = self.get_string_width(self.title) + 6
-        self.set_x((210 - width) / 2)
+        return groupby(sorted(data, key=by_category), key=by_category)
 
-        # Setting colors for frame, background and text:
-        self.set_draw_color(0, 80, 180)
-        # self.set_fill_color(230, 230, 0)
-        self.set_text_color(220, 50, 50)
-        # Setting thickness of the frame (1 mm)
-        self.set_line_width(1)
-        # Printing title:
-        self.cell(
-            width,
-            9,
-            self.title,
-            border=1,
-            new_x="LMARGIN",
-            new_y="NEXT",
-            align="C",
-            fill=True,
-        )
-        # Performing a line break:
-        self.ln(10)
+    def show(self):
+        pdf_builder = PDFBuilder()
+        with pdf_builder as pdf_builder:
+            data = self._preformat_data(self._data)
 
-    def footer(self):
-        # Setting position at 1.5 cm from bottom:
-        self.set_y(-15)
+            for category, category_companies in data:
+                pdf_builder.add_page()
+                pdf_builder.render_title(
+                    f'Категория "{category}"',
+                )
+                for company_data in category_companies:
+                    pdf_builder.render_subheading(company_data["name"])
+                    pdf_builder.render_paragraph(text=company_data["description"])
+                    pdf_builder.render_paragraph(text=company_data["contacts"])
 
-        self.set_font_size(8)
-
-        # Setting text color to gray:
-        self.set_text_color(128)
-        # Printing page number
-        self.cell(0, 10, f"Page {self.page_no()}", align="C")
-
-    def category_title(self, label):
-        self.set_font_size(14)
-
-        # Setting background color
-        self.set_fill_color(200, 220, 255)
-
-        # Printing chapter name:
-        self.cell(
-            0,
-            6,
-            f'Категория "{label}"',
-            new_x="LMARGIN",
-            new_y="NEXT",
-            align="L",
-            fill=True,
-        )
-
-        # Performing a line break:
-        self.ln(4)
-
-    def category_body(self, company_data):
-        # Printing justified text:
-        self.set_font_size(14)
-        self.write(text=company_data["name"])
-        self.ln(8)
-        self.set_font_size(12)
-        self.write(text=company_data["description"])
-        self.ln(8)
-        self.write(text=company_data["contacts"])
-        self.ln(16)
-
-    def print_category(self, title, companies_data):
-        self.add_page()
-        self.category_title(title)
-        for company_data in companies_data:
-            self.category_body(company_data)
+        return pdf_builder.build()
 
 
 mock_data = [
@@ -234,27 +182,3 @@ mock_data = [
         "category": "Развитие личности",
     },
 ]
-
-
-def preformat_data(data):
-    print(data)
-
-    def by_category(item):
-        return item["category"]
-
-    return groupby(sorted(data, key=by_category), key=by_category)
-
-
-def generate_pdf(data, filename) -> Path:
-    pdf = PDF()
-    pdf.add_font("Andika", style="", fname="Andika-Regular.ttf")
-    pdf.set_font("Andika")
-    pdf.set_title("Просто учиться!")
-    pdf.set_author("Просто учиться")
-
-    data = preformat_data(data)
-
-    for category, company_data in data:
-        pdf.print_category(category, company_data)
-
-    pdf.output(filename)

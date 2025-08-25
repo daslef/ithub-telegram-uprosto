@@ -38,14 +38,14 @@ class LotteryRecord(BaseModel):
         try:
             query = (
                 LotteryRecord.select(
-                    LotteryRecord.username,
-                    LotterySlot.date,
-                    LotterySlot.time,
+                    LotteryRecord.username.alias("username"),
+                    LotterySlot.date.alias("date"),
+                    LotterySlot.time.alias("time"),
                 )
                 .join(LotterySlot, on=(LotteryRecord.slot_id == LotterySlot.id))
                 .order_by(LotterySlot)
                 .dicts()
             )
             return list(query)
-        except Exception as e:
-            print(e)
+        except Exception:
+            raise

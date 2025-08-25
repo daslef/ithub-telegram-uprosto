@@ -1,6 +1,7 @@
 import pathlib
 import json
 from itertools import product
+from random import choice
 from peewee import IntegrityError, OperationalError
 from .models.company import CompanyCategory, Company, CompanyRecord
 from .models.lottery import LotterySlot, LotteryRecord
@@ -12,11 +13,11 @@ def seed_lottery():
     date_options = ("2025-09-06", "2025-09-07")
     time_options = ("13:50:00", "15:50:00", "17:50:00")
 
-    with database_instance:
-        database_instance.drop_tables([LotterySlot])
-        database_instance.create_tables([LotterySlot, LotteryRecord])
-
     try:
+        with database_instance:
+            database_instance.drop_tables([LotterySlot])
+            database_instance.create_tables([LotterySlot, LotteryRecord])
+
         for date, time in product(date_options, time_options):
             LotterySlot.create(date=date, time=time)
 
@@ -67,5 +68,21 @@ def seed_companies():
         print("Companies data already exists")
 
 
+def seed_lottery_records():
+    date_options = ("2025-09-06", "2025-09-07")
+    time_options = ("13:50:00", "15:50:00", "17:50:00")
+
+    try:
+        for ix in range(20):
+            username = f"testuser_{ix}"
+            date = choice(date_options)
+            time = choice(time_options)
+            LotteryRecord.add(username, date, time)
+
+    except IntegrityError:
+        print("Lottery records already exists")
+
+
 seed_lottery()
 seed_companies()
+seed_lottery_records()
