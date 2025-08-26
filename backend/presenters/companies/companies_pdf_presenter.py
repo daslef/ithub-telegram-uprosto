@@ -6,15 +6,14 @@ from presenters.abc import AbstractPresenter
 
 
 class CompaniesPDFPresenter(AbstractPresenter):
-    def _preformat_data(data):
+    def _preformat_data(self, data):
         def by_category(item):
             return item["category"]
 
         return groupby(sorted(data, key=by_category), key=by_category)
 
     def show(self):
-        pdf_builder = PDFBuilder()
-        with pdf_builder as pdf_builder:
+        with PDFBuilder() as pdf_builder:
             data = self._preformat_data(self._data)
 
             for category, category_companies in data:

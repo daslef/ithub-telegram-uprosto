@@ -10,6 +10,7 @@ class PDFBuilder(FPDF, AbstractBuilder):
         self.set_font("Andika")
         self.set_title("Просто учиться!")
         self.set_author("Просто учиться")
+        return self
 
     def __exit__(self, type, value, traceback):
         return
@@ -72,7 +73,7 @@ class PDFBuilder(FPDF, AbstractBuilder):
         self.write(text=text)
         self.ln(8)
 
-    def build(self, data):
+    def build(self):
         self.output(self._output_stream)
         self._output_stream.seek(0)
         return self._output_stream.getvalue()

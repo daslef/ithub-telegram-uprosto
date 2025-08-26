@@ -13,7 +13,10 @@ from config import settings
 from database.models.company import CompanyRecord
 
 from use_cases.lottery_report import show_lottery_report, send_lottery_report
-from use_cases.companies_report import send_users_answers_report, send_companies_brochure
+from use_cases.companies_report import (
+    send_users_answers_report,
+    send_companies_brochure,
+)
 
 logging.basicConfig(level=logging.INFO)
 
@@ -35,6 +38,9 @@ async def start(message: types.Message):
             types.KeyboardButton(text="Регистрации на розыгрыш"),
             types.KeyboardButton(text="Регистрации на розыгрыш (XLSX)"),
         )
+        builder.row(
+            types.KeyboardButton(text="Пользовательские отклики (XLSX)"),
+        )
 
     await message.answer(
         text=f"Привет, {message.from_user.first_name}! Я бот для навигации по фестивалю. Здесь ты можешь увидеть карту фестиваля, а также принять участие в игре!",
@@ -55,12 +61,13 @@ async def parse_data(message: types.Message):
         ],
     )
 
-
     username = message.from_user.username
     filename = f"{username}_brochure_{datetime.datetime.now().isoformat(timespec='minutes')}.pdf"
 
     await message.answer_document(
-        types.BufferedInputFile(file=send_companies_brochure(username), filename=filename)
+        types.BufferedInputFile(
+            file=send_companies_brochure(username), filename=filename
+        )
     )
 
 
@@ -77,8 +84,8 @@ async def send_report_lottery_message(message: types.Message):
     )
 
 
-@dp.message(F.text == "Результаты игры (XLSX)")
-async def send_report_companies_message(message: types.Message):
+@dp.message(F.text == "Пользовательские отклики (XLSX)")
+async def send_users_answers_report_message(message: types.Message):
     filename = f"puzzle_{datetime.datetime.now().isoformat(timespec='minutes')}.xlsx"
     await message.answer_document(
         types.BufferedInputFile(file=send_users_answers_report(), filename=filename)
