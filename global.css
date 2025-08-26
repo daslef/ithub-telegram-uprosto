@@ -1,17 +1,17 @@
 @font-face {
     font-family: "Dudka Bold";
-    src: url("/fonts/Dudka-Bold.ttf");
+    src: url("./fonts/Dudka-Bold.ttf");
 }
 
 @font-face {
     font-family: "Onest Regular";
-    src: url("/fonts/Onest-Regular.ttf");
+    src: url("./fonts/Onest-Regular.ttf");
     line-height: 95%;
 }
 
 @font-face {
     font-family: "Onest SemiBold";
-    src: url("/fonts/Onest-SemiBold.ttf");
+    src: url("./fonts/Onest-SemiBold.ttf");
     line-height: 95%;
 }
 
