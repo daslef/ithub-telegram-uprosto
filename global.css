@@ -58,15 +58,15 @@ body {
 }
 
 .game-heading {
-    margin-bottom: 16px;
-    margin-top: 24px;
+    margin-bottom: 14px;
+    margin-top: 20px;
     text-align: center;
     color: var(--color-orange);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
 }
 
 .game-status {
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 400;
 }
 
