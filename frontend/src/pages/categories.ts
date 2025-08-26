@@ -74,7 +74,7 @@ function renderButtons(completedCount: number) {
 
     const mainButton = tg.MainButton.setParams({
         text: 'Сформировать пазл',
-        color: '#364CA0',
+        color: '#FF9448',
         text_color: '#ffffff',
         is_active: false,
         is_visible: false
@@ -82,7 +82,7 @@ function renderButtons(completedCount: number) {
 
     const secondaryButton = tg.SecondaryButton.setParams({
         text: 'Участвовать в розыгрыше',
-        color: '#c9349e',
+        color: '#9C8CD9',
         text_color: '#ffffff',
         is_active: false,
         is_visible: false,

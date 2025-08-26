@@ -23,8 +23,7 @@ export async function renderPage(page: Page, category?: Category) {
         'lottery': {
             pageFn: LotteryPage,
             templateId: "lottery"
-        },
-
+        }
     }
 
     const { pageFn, templateId } = pages[page]

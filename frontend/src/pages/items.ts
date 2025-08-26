@@ -81,6 +81,7 @@ export default function FormPage(categoryName: string) {
     const categoryData = categories.find(({ category }) => category === categoryName)
     const formElement = document.querySelector('.form') as HTMLFormElement
     const formHeading = document.querySelector(".form__heading") as HTMLHeadingElement
+    const formButtonElement = document.querySelector('.form__button') as HTMLButtonElement
     const optionsElement = document.querySelector('.form__options') as HTMLDivElement
 
     formHeading.textContent = categoryName
@@ -94,6 +95,11 @@ export default function FormPage(categoryName: string) {
     backToCategoriesButton.show()
     backToCategoriesButton.onClick(navigateBack)
 
+    const spinner = document.createElement('img')
+    spinner.src = '/favicon.svg'
+    spinner.className = 'spinner'
+    formElement.appendChild(spinner)
+
     cloudProvider()
         .getItem<Storage>('festival')
         .then(value => {
@@ -104,9 +110,12 @@ export default function FormPage(categoryName: string) {
             console.error(error)
         })
         .finally(() => {
+            spinner.remove()
             for (const item of categoryData!.items) {
                 const isChecked = storage[categoryData!.id]?.items?.includes(item.id) ?? false
                 optionsElement.prepend(renderEntry(item, isChecked))
             }
+            (formElement.querySelector('.form__comment') as HTMLTextAreaElement).removeAttribute('hidden')
+            formButtonElement.removeAttribute('hidden')
         })
 }

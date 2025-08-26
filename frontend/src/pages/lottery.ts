@@ -44,7 +44,7 @@ export default function LotteryPage() {
 
         const registerButton = tg.MainButton.setParams({
             text: 'Отправить данные',
-            color: '#364CA0',
+            color: '#FF9448',
             text_color: '#ffffff',
             is_active: false,
             is_visible: false
