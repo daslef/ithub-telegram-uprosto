@@ -1,17 +1,17 @@
 @font-face {
     font-family: "Dudka Bold";
-    src: url("/fonts/Dudka-Bold.ttf");
+    src: url("./fonts/Dudka-Bold.ttf");
 }
 
 @font-face {
     font-family: "Onest Regular";
-    src: url("/fonts/Onest-Regular.ttf");
+    src: url("./fonts/Onest-Regular.ttf");
     line-height: 95%;
 }
 
 @font-face {
     font-family: "Onest SemiBold";
-    src: url("/fonts/Onest-SemiBold.ttf");
+    src: url("./fonts/Onest-SemiBold.ttf");
     line-height: 95%;
 }
 
@@ -34,7 +34,7 @@ body {
     background: var(--color-beige);
     font-family: "Onest Regular", sans-serif;
     margin: 0;
-    padding: 25px 20px 10px;
+    padding: 25px 20px 20px;
     text-align: center;
     /* danger */
     height: var(--tg-viewport-stable-height);
@@ -58,16 +58,18 @@ body {
 }
 
 .game-heading {
-    margin-bottom: 16px;
-    margin-top: 24px;
+    margin-bottom: 14px;
+    margin-top: 20px;
     text-align: center;
     color: var(--color-orange);
-    font-size: 1.3rem;
+    font-size: 1rem;
 }
 
 .game-status {
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     font-weight: 400;
+    margin-bottom: 10px;
+    margin-top: 20px;
 }
 
 .game_description {
@@ -75,7 +77,7 @@ body {
     align-items: start;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 .game_description__paragraph {
@@ -102,16 +104,16 @@ body {
 }
 
 .category.disabled .st6 {
-    fill: var(--color-orange);
+    /* fill: var(--color-orange); */
 }
 
 .category:hover .st6 {
-    fill: var(--color-orange);
+    /* fill: var(--color-orange); */
     transform: scale(1.01)
 }
 
 .spinner {
-    width: 40%;
+    width: 25%;
     margin: 0 auto;
     position: absolute;
     top: 50%;
@@ -168,7 +170,7 @@ body {
 .form__button {
     appearance: none;
     padding: 10px 24px;
-    background: var(--color-orange);
+    background: var(--color-lavender);
     color: #fff;
     font-family: inherit;
     font-size: 16px;

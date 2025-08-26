@@ -91,6 +91,9 @@ export default function FormPage(categoryName: string) {
 
     onInput()
 
+    tg.MainButton.hide()
+    tg.SecondaryButton.hide()
+
     const backToCategoriesButton = tg.BackButton
     backToCategoriesButton.show()
     backToCategoriesButton.onClick(navigateBack)

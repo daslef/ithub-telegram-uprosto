@@ -10,8 +10,8 @@ type DatetimeObject = {
 export default function LotteryPage() {
     function renderButtons() {
         function cleanButtons() {
-            backToCategoriesButton.hide()
-            backToCategoriesButton.offClick(navigateBackToCategories)
+            tg.BackButton.hide()
+            tg.BackButton.offClick(navigateBackToCategories)
             registerButton.hide().disable().offClick(sendLotteryData)
         }
 
@@ -21,13 +21,15 @@ export default function LotteryPage() {
         }
 
         function sendLotteryData() {
-            tg.showPopup({ title: 'Уважаемый гость', message: `Подтвердите согласие на обработку персональных данных` }, () => {
+            tg.showConfirm(`Подтвердите согласие на обработку персональных данных`, (isOK) => {
+                if (!isOK) {
+                    return
+                }
+
                 tg.requestContact((success, response) => {
                     if (success) {
                         const contact = (response as RequestContactResponseSent).responseUnsafe.contact
                         tg.showPopup({ title: `Заявка принята`, message: `${contact.first_name} ${contact.last_name ?? ""} (${contact.phone_number}), Вы зарегистрированы на ${registrationDatetime}` })
-                    } else {
-                        tg.showPopup({ title: `${tg.version}`, message: JSON.stringify(response) })
                     }
                 })
             })
@@ -50,12 +52,10 @@ export default function LotteryPage() {
             is_visible: false
         })
 
-        const backToCategoriesButton = tg.BackButton
-
-        backToCategoriesButton.onClick(navigateBackToCategories)
+        tg.BackButton.onClick(navigateBackToCategories)
         registerButton.onClick(sendLotteryData)
 
-        backToCategoriesButton.show()
+        tg.BackButton.show()
 
         return { registerButton }
     }

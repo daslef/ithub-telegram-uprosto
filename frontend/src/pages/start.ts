@@ -26,7 +26,7 @@ async function renderButtons() {
 
     const mainButton = tg.MainButton.setParams({
         text: 'Продолжить',
-        color: '#FF9448',
+        color: '#9C8CD9',
         text_color: '#ffffff',
         is_active: false,
         is_visible: false
@@ -34,8 +34,8 @@ async function renderButtons() {
 
     const secondaryButton = tg.SecondaryButton.setParams({
         text: 'Начать сначала',
-        color: '#F8FF92',
-        text_color: 'black',
+        color: '#F4EDE5',
+        text_color: '#000000',
         is_active: false,
         is_visible: false
     })
