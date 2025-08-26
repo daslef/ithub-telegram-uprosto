@@ -62,12 +62,14 @@ body {
     margin-top: 20px;
     text-align: center;
     color: var(--color-orange);
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 .game-status {
     font-size: 0.9rem;
     font-weight: 400;
+    margin-bottom: 10px;
+    margin-top: 20px;
 }
 
 .game_description {
