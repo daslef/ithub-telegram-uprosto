@@ -34,7 +34,7 @@ body {
     background: var(--color-beige);
     font-family: "Onest Regular", sans-serif;
     margin: 0;
-    padding: 25px 20px 10px;
+    padding: 25px 20px 20px;
     text-align: center;
     /* danger */
     height: var(--tg-viewport-stable-height);
