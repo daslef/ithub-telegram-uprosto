@@ -34,14 +34,15 @@ body {
     background: var(--color-beige);
     font-family: "Onest Regular", sans-serif;
     margin: 0;
-    padding: 25px 20px 20px;
     text-align: center;
     /* danger */
-    /* height: var(--tg-viewport-stable-height); */
+    height: var(--tg-viewport-stable-height);
 }
 
 #app {
-    height: var(--tg-viewport-stable-height);
+    /* height: var(--tg-viewport-stable-height); */
+    min-height: 100%;
+    padding: 25px 20px 20px;
 }
 
 .logo_heading__logo {
@@ -88,26 +89,17 @@ body {
 
 .categories {
     margin-top: 25px;
-    margin-bottom: 30px;
+    padding-bottom: 40px;
 }
 
 .category {
     cursor: pointer;
-
     position: relative;
     overflow: hidden;
 }
 
 .category.disabled {
     pointer-events: initial;
-}
-
-.category .st6 {
-    filter: opacity(0.6);
-}
-
-.category.disabled .st6 {
-    filter: opacity(1);
 }
 
 .spinner {
@@ -152,7 +144,6 @@ body {
 }
 
 .form__options {
-    margin-bottom: 30px;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -163,28 +154,6 @@ body {
     gap: 10px;
     text-align: left;
     font-size: 14px;
-}
-
-.form__button {
-    appearance: none;
-    padding: 10px 24px;
-    background: var(--color-lavender);
-    color: #fff;
-    font-family: inherit;
-    font-size: 16px;
-    border: transparent;
-    border-radius: 16px;
-    cursor: pointer;
-}
-
-.form__button:hover {
-    background: #0056b3;
-}
-
-.form__button:disabled {
-    pointer-events: none;
-    cursor: default;
-    opacity: 0.4;
 }
 
 .lottery-container {
@@ -298,4 +267,64 @@ body {
 
 .lottery-summary::-webkit-details-marker {
     display: none;
+}
+
+.category .st0 {
+    fill: #FDF5E5;
+}
+
+.category .puzzle_border {
+    fill: none;
+    stroke: #000000;
+    stroke-width: 0.2835;
+    stroke-miterlimit: 11.3386;
+}
+
+.category .rectangle--blueish {
+    fill: #73B7FF;
+}
+
+.category .rectangle--sea {
+    fill: var(--color-sea);
+}
+
+.category .rectangle--lavender {
+    fill: var(--color-lavender);
+}
+
+.category.disabled .rectangle {
+    fill: var(--color-beige);
+}
+
+.category.disabled:has(.rectangle--sea) .puzzle_border {
+    fill: var(--color-sea);
+    stroke: var(--color-sea);
+}
+
+.category.disabled:has(.rectangle--blueish) .puzzle_border {
+    fill: #73B7FF;
+    stroke: #73B7FF;
+}
+
+.category.disabled:has(.rectangle--lavender) .puzzle_border {
+    fill: var(--color-lavender);
+    stroke: var(--color-lavender);
+}
+
+.category .title {
+    fill: white;
+    font-size: 18px;
+    font-family: "Onest SemiBold", sans-serif;
+}
+
+.category.disabled .title {
+    fill: black;
+}
+
+.category .icon-done {
+    display: none;
+}
+
+.category .show {
+    display: inline-block;
 }
