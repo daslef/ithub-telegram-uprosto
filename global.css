@@ -45,6 +45,10 @@ body {
     padding: 25px 20px 20px;
 }
 
+.logo_heading {
+    width: min(100%, 420px)
+}
+
 .logo_heading__logo {
     width: 100%;
 }
