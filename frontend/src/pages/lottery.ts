@@ -38,7 +38,7 @@ function sendLotteryData(date?: string, time?: string) {
                             console.log(error)
                         })
                         .then(() => {
-                            tg.sendData(JSON.stringify({ data: payload, type: "lottery" }))
+                            tg.sendData(JSON.stringify({ payload, type: "lottery" }))
                         })
                         .catch(error => {
                             console.log(error)

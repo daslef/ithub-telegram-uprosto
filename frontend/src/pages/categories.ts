@@ -59,7 +59,7 @@ function navigateToLottery() {
 function sendPuzzleData() {
     cloudProvider()
         .getItem<Storage>('festival')
-        .then(data => tg.sendData(JSON.stringify({ type: 'puzzle', data })))
+        .then(payload => tg.sendData(JSON.stringify({ type: 'puzzle', payload })))
         .catch(error => {
             console.error(error)
         })
