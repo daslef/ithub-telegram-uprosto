@@ -117,9 +117,9 @@ body {
     background: #fff;
     border-radius: 8px;
     margin: 0 auto;
-    width: min(100%, 320px);
+    width: min(100%, 420px);
     font-family: "Onest Regular";
-    min-height: 445px;
+    min-height: 400px;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
@@ -325,6 +325,14 @@ body {
     display: none;
 }
 
-.category .show {
+.category.disabled .icon-done {
     display: inline-block;
+}
+
+.icon-done path {
+    fill: #FFFFFF;
+    stroke: #00AA6E;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
