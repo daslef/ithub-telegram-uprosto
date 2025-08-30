@@ -15,8 +15,8 @@ export function cloudProvider() {
                 if (error) {
                     reject(new Error(`Error on writing data:\n${error}`))
                 }
+                resolve()
             })
-            resolve()
         })
 
         return Promise.race([setPromise, timeout()])
