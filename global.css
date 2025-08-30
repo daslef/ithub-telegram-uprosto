@@ -94,7 +94,6 @@ body {
 .category {
     cursor: pointer;
 
-    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
 }
@@ -103,13 +102,12 @@ body {
     pointer-events: initial;
 }
 
-.category.disabled .st6 {
-    /* fill: var(--color-orange); */
+.category .st6 {
+    filter: opacity(0.6);
 }
 
-.category:hover .st6 {
-    /* fill: var(--color-orange); */
-    transform: scale(1.01)
+.category.disabled .st6 {
+    filter: opacity(1);
 }
 
 .spinner {
