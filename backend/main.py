@@ -12,6 +12,7 @@ from aiogram.enums.parse_mode import ParseMode
 from config import settings
 from database.models.company import CompanyRecord
 
+from use_cases.save_puzzle_results import save_puzzle_results
 from use_cases.lottery_report import show_lottery_report, send_lottery_report
 from use_cases.companies_report import (
     send_users_answers_report,
@@ -50,25 +51,21 @@ async def start(message: types.Message):
 
 @dp.message(F.content_type == ContentType.WEB_APP_DATA)
 async def parse_data(message: types.Message):
-    data = json.loads(message.web_app_data.data)
-
-    CompanyRecord.add_many(
-        message.from_user.username,
-        [
-            company_id
-            for category_values in data.values()
-            for company_id in category_values["items"]
-        ],
-    )
-
     username = message.from_user.username
-    filename = f"{username}_brochure_{datetime.datetime.now().isoformat(timespec='minutes')}.pdf"
 
-    await message.answer_document(
-        types.BufferedInputFile(
-            file=send_companies_brochure(username), filename=filename
+    try:
+        save_puzzle_results(username, message.web_app_data.data)
+        filename = f"{username}_brochure_{datetime.datetime.now().isoformat(timespec='minutes')}.pdf"
+
+        await message.answer_document(
+            types.BufferedInputFile(
+                file=send_companies_brochure(username), filename=filename
+            )
         )
-    )
+    except Exception:
+        await message.answer(
+            text="Приносим извинения за технические неполадки. Попробуйте позже"
+        )
 
 
 @dp.message(F.text == "Регистрации на розыгрыш")
