@@ -37,4 +37,4 @@ export async function renderPage(page: Page, category?: Category) {
     await pageFn()
 }
 
-await renderPage("start");
+await renderPage("categories");

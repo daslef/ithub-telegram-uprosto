@@ -32,15 +32,18 @@ function renderEntry(item: Company, checked = false) {
 
 export default function FormPage(categoryName: string) {
     function navigateBack() {
-        backToCategoriesButton.hide()
-        backToCategoriesButton.offClick(navigateBack)
+        tg.BackButton.offClick(navigateBack)
         renderPage("categories")
     }
 
     function onInput() {
-        const button = formElement.querySelector('.form__button') as HTMLButtonElement
-        const checkedNumber = getCheckedElements(formElement).filter(({ tagName }) => tagName === "INPUT").length
-        button.disabled = checkedNumber === 0
+        const checkedNumber = getCheckedElements(formElement).length
+
+        if (checkedNumber > 0) {
+            tg.MainButton.show().enable()
+        } else {
+            tg.MainButton.hide().disable()
+        }
 
         if (checkedNumber === 3) {
             for (const element of optionsElement.querySelectorAll('input:not(:checked)')) {
@@ -53,9 +56,7 @@ export default function FormPage(categoryName: string) {
         }
     }
 
-    function onSubmit(event: SubmitEvent) {
-        event.preventDefault()
-
+    function onSubmit() {
         const commentElement = formElement.querySelector('.form__comment') as HTMLTextAreaElement
         const commentValue = commentElement?.value && commentElement.value.length > 3 ? commentElement.value : ""
         const itemsValue = getCheckedElements(formElement).filter(({ tagName }) => tagName === "INPUT").map(({ value }) => value);
@@ -72,6 +73,7 @@ export default function FormPage(categoryName: string) {
                 console.log(error)
             })
             .finally(() => {
+                tg.MainButton.offClick(onSubmit)
                 renderPage('categories')
             })
     }
@@ -81,22 +83,15 @@ export default function FormPage(categoryName: string) {
     const categoryData = categories.find(({ category }) => category === categoryName)
     const formElement = document.querySelector('.form') as HTMLFormElement
     const formHeading = document.querySelector(".form__heading") as HTMLHeadingElement
-    const formButtonElement = document.querySelector('.form__button') as HTMLButtonElement
     const optionsElement = document.querySelector('.form__options') as HTMLDivElement
 
     formHeading.textContent = categoryName
 
     formElement.addEventListener('input', onInput)
-    formElement.addEventListener("submit", onSubmit);
 
-    onInput()
-
-    tg.MainButton.hide()
     tg.SecondaryButton.hide()
-
-    const backToCategoriesButton = tg.BackButton
-    backToCategoriesButton.show()
-    backToCategoriesButton.onClick(navigateBack)
+    tg.BackButton.onClick(navigateBack).show()
+    tg.MainButton.setText("Отправить").onClick(onSubmit).hide()
 
     const spinner = document.createElement('img')
     spinner.src = '/favicon.svg'
@@ -119,6 +114,6 @@ export default function FormPage(categoryName: string) {
                 optionsElement.prepend(renderEntry(item, isChecked))
             }
             (formElement.querySelector('.form__comment') as HTMLTextAreaElement).removeAttribute('hidden')
-            formButtonElement.removeAttribute('hidden')
+            onInput()
         })
 }
