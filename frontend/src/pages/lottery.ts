@@ -2,6 +2,7 @@ import { renderPage } from "../router"
 import { tg } from "../telegram-web-app"
 import { cloudProvider } from "../storage"
 import type { StorageLottery } from '../types'
+import { requestContact, showPopup } from '../utils/promises'
 
 type DatetimeObject = {
     date: number,
@@ -14,47 +15,37 @@ function sendLotteryData(date?: string, time?: string) {
         return
     }
 
-    tg.showConfirm(`Подтвердите согласие на обработку персональных данных`, (isOK) => {
-        if (!isOK) {
-            return
-        }
+    let payload: StorageLottery | undefined;
 
-        tg.requestContact((success, response) => {
-            if (success) {
-                const contact = (response as RequestContactResponseSent).responseUnsafe.contact
-                const registrationDatetime = `${date} августа, ${time}`
-                const payload = {
-                    date,
-                    time,
-                    phone_number: contact.phone_number ?? "",
-                    first_name: contact.first_name ?? "",
-                    last_name: contact.last_name ?? ""
-                }
-
-                tg.showPopup({ title: `Заявка принята`, message: `Вы зарегистрированы на ${registrationDatetime}` }, (_) => {
-                    cloudProvider()
-                        .setItem<StorageLottery>('lottery', payload)
-                        .catch(error => {
-                            console.log(error)
-                        })
-                        .then(() => {
-                            tg.sendData(JSON.stringify({ payload, type: "lottery" }))
-                        })
-                        .catch(error => {
-                            console.log(error)
-                        })
-                })
+    requestContact('Подтвердите согласие на обработку персональных данных')
+        .then(contact => {
+            payload = {
+                date,
+                time,
+                phone_number: contact.phone_number ?? "",
+                first_name: contact.first_name ?? "",
+                last_name: contact.last_name ?? ""
             }
+            return cloudProvider().setItem<StorageLottery>('lottery', payload)
         })
-    })
+        .then(() => showPopup({
+            title: `Заявка принята`,
+            message: `Вы зарегистрированы на ${date} сентября, ${time}`
+        }))
+        .then(() => {
+            tg.sendData(JSON.stringify({ payload, type: "lottery" }))
+        })
+        .catch(error => {
+            console.log(error)
+        })
 }
 
 function showTimeslots(event: MouseEvent | TouchEvent) {
-    const detailsElement = document.querySelector<HTMLDetailsElement>('.lottery-container')!
-    const timeContainers = document.querySelectorAll<HTMLElement>('.lottery-container > div > .lottery-input-container')
+    const tileGroupElement = document.querySelector<HTMLDivElement>('.lottery-tile-group--time')!
+    const timeContainers = tileGroupElement.querySelectorAll<HTMLDivElement>('.lottery-input-container')
     const selectedTimeContainer = event.currentTarget as HTMLElement
 
-    detailsElement.open = true
+    tileGroupElement.classList.remove('hidden')
 
     for (const timeContainer of timeContainers) {
         timeContainer.dataset.date = selectedTimeContainer.dataset.date
@@ -71,15 +62,6 @@ function showTimeslots(event: MouseEvent | TouchEvent) {
     }
 }
 
-function dateTimeNow() {
-    const now = new Date()
-    return {
-        date: now.getDate(),
-        hour: now.getHours(),
-        minute: now.getMinutes()
-    }
-}
-
 function parseDatetimeAttributes(element: HTMLElement): DatetimeObject | undefined {
     if (!element.dataset.date || !element.dataset.time) {
         return
@@ -93,17 +75,17 @@ function parseDatetimeAttributes(element: HTMLElement): DatetimeObject | undefin
 }
 
 function isDatetimePassed({ date, hour, minute }: DatetimeObject) {
-    const currentDatetime = dateTimeNow()
-    return currentDatetime.date > date
-        || currentDatetime.date === date && currentDatetime.hour > hour
-        || currentDatetime.date === date && currentDatetime.hour === hour && currentDatetime.minute >= minute
+    const currentDatetime = new Date()
+
+    return currentDatetime.getDate() > date
+        || currentDatetime.getDate() === date && currentDatetime.getHours() > hour
+        || currentDatetime.getDate() === date && currentDatetime.getHours() === hour && currentDatetime.getMinutes() >= minute
 }
 
 function isDatePassed(date: number) {
-    const currentDate = dateTimeNow().date
+    const currentDate = new Date().getDate()
     return currentDate > date
 }
-
 
 export default function LotteryPage() {
     function cleanButtons() {
@@ -130,8 +112,8 @@ export default function LotteryPage() {
     let registrationDate: string | undefined;
     let registrationTime: string | undefined;
 
-    const dateContainers = document.querySelectorAll<HTMLElement>('.lottery-summary .lottery-input-container')
-    const timeContainers = document.querySelectorAll<HTMLElement>('.lottery-container > div > .lottery-input-container')
+    const dateContainers = document.querySelectorAll<HTMLElement>('.lottery-tile-group--date .lottery-input-container')
+    const timeContainers = document.querySelectorAll<HTMLElement>('.lottery-tile-group--time .lottery-input-container')
 
     for (const dateContainer of dateContainers) {
         const date = dateContainer.dataset.date
