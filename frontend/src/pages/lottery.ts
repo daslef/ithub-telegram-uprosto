@@ -83,6 +83,7 @@ function isDatetimePassed({ date, hour, minute }: DatetimeObject) {
 }
 
 function isDatePassed(date: number) {
+    return false // TODO fix 01.09
     const currentDate = new Date().getDate()
     return currentDate > date
 }
