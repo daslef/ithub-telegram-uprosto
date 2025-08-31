@@ -46,7 +46,8 @@ body {
 }
 
 .logo_heading {
-    width: min(100%, 420px)
+    width: min(100%, 420px);
+    margin: 0 auto;
 }
 
 .logo_heading__logo {
@@ -339,4 +340,8 @@ body {
     stroke-width: 1.5;
     stroke-linecap: round;
     stroke-linejoin: round;
+}
+
+.hidden {
+    visibility: hidden;
 }
