@@ -11,13 +11,10 @@ from aiogram.enums.parse_mode import ParseMode
 
 from config import settings
 from database.models.company import CompanyRecord
-
 from use_cases.save_puzzle_results import save_puzzle_results
+from use_cases.save_lottery_results import save_lottery_results
 from use_cases.lottery_report import show_lottery_report, send_lottery_report
-from use_cases.companies_report import (
-    send_users_answers_report,
-    send_companies_brochure,
-)
+from use_cases.companies_report import send_users_answers_report, send_companies_brochure
 
 logging.basicConfig(level=logging.INFO)
 
@@ -51,20 +48,41 @@ async def start(message: types.Message):
 
 @dp.message(F.content_type == ContentType.WEB_APP_DATA)
 async def parse_data(message: types.Message):
-    username = message.from_user.username
+    username = message.from_user.username or f"id{message.from_user.id}"
 
     try:
-        save_puzzle_results(username, message.web_app_data.data)
-        filename = f"{username}_brochure_{datetime.datetime.now().isoformat(timespec='minutes')}.pdf"
+        raw = json.loads(message.web_app_data.data)
+        data_type = raw.get("type")
+        payload = raw.get("payload")
+        consent = raw.get("consent") 
+        phone = raw.get("phone") if consent else None 
 
-        await message.answer_document(
-            types.BufferedInputFile(
-                file=send_companies_brochure(username), filename=filename
+        if not data_type or not payload:
+            await message.answer("ошибка формата данных.")
+            return
+
+        if data_type == "puzzle":
+            save_puzzle_results(username, payload, phone=phone)
+
+            filename = f"{username}_brochure_{datetime.datetime.now().isoformat(timespec='minutes')}.pdf"
+            await message.answer_document(
+                types.BufferedInputFile(
+                    file=send_companies_brochure(username),
+                    filename=filename
+                )
             )
-        )
-    except Exception:
+
+        elif data_type == "lottery":
+            save_lottery_results(username, payload)
+            await message.answer("Регистрация на розыгрыш сохранена или обновлена! B)")
+
+        else:
+            await message.answer("ошибка формата данных.")
+
+    except Exception as e:
+        logging.exception(e)
         await message.answer(
-            text="Приносим извинения за технические неполадки. Попробуйте позже"
+            "Приносим извинения за технические неполадки. Попробуйте позже"
         )
 
 

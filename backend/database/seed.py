@@ -10,7 +10,7 @@ from .instance import database_instance
 
 
 def seed_lottery():
-    date_options = ("2025-09-06", "2025-09-07")
+    date_options = ("2025-08-30", "2025-08-31")
     time_options = ("13:50:00", "15:50:00", "17:50:00")
 
     try:
@@ -69,7 +69,7 @@ def seed_companies():
 
 
 def seed_lottery_records():
-    date_options = ("2025-09-06", "2025-09-07")
+    date_options = ("2025-08-30", "2025-08-31")
     time_options = ("13:50:00", "15:50:00", "17:50:00")
 
     try:
