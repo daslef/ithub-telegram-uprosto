@@ -82,7 +82,6 @@ export default function FormPage(categoryName: string) {
     const commentElement = formElement.querySelector('.form__comment')
     const spinnerElement = formElement.querySelector('.spinner')
 
-
     formHeading.textContent = categoryName
 
     formElement.addEventListener('input', onInput)

@@ -1,33 +1,37 @@
 import { renderPage } from "../router"
 import { tg } from "../telegram-web-app"
 import { useLotteryStore } from "../store/lottery"
+import { useCredentialsStore } from '../store/credentials';
 import { requestContact } from '../utils/promises'
-import type { Credentials, LotteryDatetime } from "../types"
 
-function sendLotteryData(date?: string, time?: string) {
+async function sendLotteryData(date?: string, time?: string) {
     if (!date || !time) {
         return
     }
 
-    const datetimePayload: LotteryDatetime = { date, time };
-    let credentialsPayload: Credentials | undefined;
+    const hasCredentialsSet = useCredentialsStore.getState().isSet()
+    useLotteryStore.getState().setDatetime({ date, time })
 
-    requestContact('Подтвердите согласие на обработку персональных данных')
-        .then(contact => {
-            credentialsPayload = {
+    if (!hasCredentialsSet) {
+        try {
+            const contact = await requestContact('Подтвердите согласие на обработку персональных данных')
+            useCredentialsStore.getState().setCredentials({
                 phone_number: contact.phone_number ?? "",
                 first_name: contact.first_name ?? "",
                 last_name: contact.last_name ?? ""
-            }
-            useLotteryStore.getState().setCredentials(credentialsPayload)
-            useLotteryStore.getState().setDatetime(datetimePayload)
-        })
-        .then(() => {
-            tg.sendData(JSON.stringify({ payload: { ...datetimePayload, ...credentialsPayload }, type: "lottery" }))
-        })
-        .catch(error => {
+            })
+        } catch (error) {
             console.log(error)
-        })
+        }
+    }
+
+    try {
+        const credentialsPayload = useCredentialsStore.getState().credentials
+        useLotteryStore.getState().markAsSent()
+        tg.sendData(JSON.stringify({ payload: { date, time, ...credentialsPayload }, type: "lottery" }))
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 function showTimeslots(event: MouseEvent | TouchEvent) {
@@ -71,7 +75,7 @@ function isDatePassed(date: string) {
 export default function LotteryPage() {
     function cleanButtons() {
         tg.BackButton.offClick(navigateBackToCategories).hide()
-        registerButton.offClick(() => sendLotteryData(registrationDate, registrationTime)).hide().disable()
+        registerButton.offClick(async () => await sendLotteryData(registrationDate, registrationTime)).hide().disable()
     }
 
     function navigateBackToCategories() {
@@ -79,16 +83,19 @@ export default function LotteryPage() {
         renderPage('categories')
     }
 
+    const lotteryHasBeenSent = useLotteryStore.getState().hasBeenSent
+
     const registerButton = tg.MainButton.setParams({
-        text: 'Отправить данные',
+        text: lotteryHasBeenSent ? 'Изменить данные' : 'Отправить данные',
         color: '#FF9448',
         text_color: '#ffffff',
         is_active: false,
         is_visible: false
     })
 
+    tg.SecondaryButton.hide()
     tg.BackButton.onClick(navigateBackToCategories).show()
-    registerButton.onClick(() => sendLotteryData(registrationDate, registrationTime))
+    registerButton.onClick(async () => await sendLotteryData(registrationDate, registrationTime))
 
     let registrationDate: string | undefined;
     let registrationTime: string | undefined;
@@ -113,5 +120,16 @@ export default function LotteryPage() {
                 registerButton.enable().show()
             }
         })
+    }
+
+    if (lotteryHasBeenSent) {
+        registrationDate = useLotteryStore.getState().date!;
+        registrationTime = useLotteryStore.getState().time!;
+
+        const currentDateContainer = [...dateContainers].find(dateContainer => dateContainer.dataset.date === registrationDate)
+        currentDateContainer?.dispatchEvent(new MouseEvent('click'))
+
+        const currentTimeContainer = [...timeContainers].find(timeContainer => timeContainer.dataset.time === registrationTime)
+        currentTimeContainer?.dispatchEvent(new MouseEvent('click'))
     }
 }

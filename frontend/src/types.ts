@@ -9,7 +9,7 @@ export type Credentials = {
     phone_number: string | null
 }
 
-export type LotteryStorage = LotteryDatetime & Credentials
+export type LotteryStorage = LotteryDatetime
 
 export type PuzzleItem = {
     items: string[],
@@ -25,3 +25,9 @@ export type CompanyInfo = {
 }
 
 export type PuzzleStorage = { [K: CategoryId]: PuzzleItem }
+
+export type PuzzleDTO = {
+    type: 'puzzle',
+    payload: PuzzleStorage,
+    credentials?: Credentials
+}

@@ -1,76 +1,55 @@
 import { createStore } from 'zustand/vanilla';
-import { createJSONStorage, persist, devtools } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { getCloudStorageProvider } from '../storage';
-import type { LotteryDatetime, LotteryStorage, Credentials } from '../types'
+import type { LotteryDatetime } from '../types'
 
 type LotteryState = {
     isPending: boolean;
-} & LotteryStorage
+    hasBeenSent: boolean;
+    date: string | null;
+    time: string | null;
+}
 
 interface LotteryActions {
     setDatetime: (datetime: LotteryDatetime) => void;
-    setCredentials: (credentials: Credentials) => void;
     clearAll: () => void;
+    markAsSent: () => void;
 }
 
 export const useLotteryStore = createStore<LotteryState & LotteryActions>()(
-    devtools(
-        persist(
-            (set, _) => ({
-                isPending: false,
+    persist(
+        (set, _) => ({
+            isPending: false,
+            hasBeenSent: false,
+            date: null,
+            time: null,
+            setDatetime: ({ date, time }) => set({
+                date,
+                time
+            }),
+            clearAll: () => set({
                 date: null,
                 time: null,
-                first_name: null,
-                last_name: null,
-                phone_number: null,
-                setDatetime: ({ date, time }) =>
-                    set({
-                        date,
-                        time
-                    }),
-                setCredentials: ({ first_name, last_name, phone_number }) =>
-                    set({
-                        first_name, last_name, phone_number
-                    }),
-                clearAll: () => set({
-                    date: null,
-                    time: null,
-                    first_name: null,
-                    last_name: null,
-                    phone_number: null,
-                }),
+                hasBeenSent: false
             }),
-            {
-                name: 'lottery',
-                storage: createJSONStorage(getCloudStorageProvider),
-                partialize: ({ date, time, first_name, last_name, phone_number }) => ({ date, time, first_name, last_name, phone_number }),
-                onRehydrateStorage: () => {
-                    console.log('[storage]: hydration starts');
-
-                    return (_, error) => {
-                        if (error) {
-                            console.log('[Notes storage]: an error happened during hydration', error);
-                        } else {
-                            console.log('[Notes storage]: hydration finished');
-                        }
-                    };
-                },
-                merge: (persistedState, currentState) => {
-                    const persisted = persistedState as LotteryState || {};
-                    return {
-                        ...currentState,
-                        date: persisted.date ?? currentState.date,
-                        time: persisted.time ?? currentState.time,
-                        first_name: persisted.first_name ?? currentState.first_name,
-                        last_name: persisted.last_name ?? currentState.last_name,
-                        phone_number: persisted.phone_number ?? currentState.phone_number,
-                    };
-                },
-            }
-        )
+            markAsSent: () => set({
+                hasBeenSent: true
+            })
+        }),
+        {
+            name: 'lottery',
+            storage: createJSONStorage(getCloudStorageProvider),
+            partialize: (state) => ({ date: state.date, time: state.time, hasBeenSent: state.hasBeenSent }),
+            merge: (persistedState, currentState) => {
+                const persisted = persistedState as LotteryState || {};
+                return {
+                    ...currentState,
+                    date: persisted.date ?? currentState.date,
+                    time: persisted.time ?? currentState.time,
+                    hasBeenSent: persisted.hasBeenSent ?? currentState.hasBeenSent
+                };
+            },
+        }
     )
-);
-
-export const clearAll = () => useLotteryStore.persist.clearStorage();
-export const rehydrateNotes = () => useLotteryStore.persist.rehydrate();
+)

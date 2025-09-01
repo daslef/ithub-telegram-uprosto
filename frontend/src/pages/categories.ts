@@ -2,7 +2,10 @@ import { renderPage } from '../router'
 import { categories } from '../storage'
 import { tg } from '../telegram-web-app';
 import { usePuzzleStore } from '../store/puzzle';
-import type { CategoryId } from '../types';
+import { useLotteryStore } from '../store/lottery';
+import { useCredentialsStore } from '../store/credentials';
+import { requestContact } from '../utils/promises';
+import type { CategoryId, PuzzleDTO } from '../types';
 
 
 function renderStatus(completedCount: number) {
@@ -30,14 +33,8 @@ function renderCategories(completedCategories: CategoryId[]) {
 }
 
 function cleanButtons() {
-    tg.BackButton.offClick(navigateBack).hide()
     tg.MainButton.hide().disable().offClick(sendPuzzleData)
     tg.SecondaryButton.hide().disable().offClick(navigateToLottery)
-}
-
-function navigateBack() {
-    cleanButtons()
-    renderPage('start')
 }
 
 function navigateToLottery() {
@@ -45,11 +42,29 @@ function navigateToLottery() {
     renderPage("lottery")
 }
 
-function sendPuzzleData() {
-    const payload = usePuzzleStore.getState().items
+async function sendPuzzleData() {
     cleanButtons()
+
     try {
-        tg.sendData(JSON.stringify({ type: 'puzzle', payload }))
+        const hasCredentialsSet = useCredentialsStore.getState().isSet()
+        if (!hasCredentialsSet) {
+
+            const contact = await requestContact('Подтвердите согласие на обработку персональных данных')
+            useCredentialsStore.getState().setCredentials({
+                phone_number: contact.phone_number ?? "",
+                first_name: contact.first_name ?? "",
+                last_name: contact.last_name ?? ""
+            })
+        }
+
+        const data: PuzzleDTO = {
+            type: 'puzzle',
+            payload: usePuzzleStore.getState().items,
+            credentials: useCredentialsStore.getState().credentials
+        }
+
+        usePuzzleStore.getState().markAsSent()
+        tg.sendData(JSON.stringify(data))
     } catch (error) {
         console.log(error)
     }
@@ -57,6 +72,8 @@ function sendPuzzleData() {
 
 
 function renderButtons(completedCount: number) {
+    const lotteryHasBeenSent = useLotteryStore.getState().hasBeenSent
+
     tg.MainButton.setParams({
         text: 'Сформировать пазл',
         color: '#FF9448',
@@ -66,7 +83,7 @@ function renderButtons(completedCount: number) {
     })
 
     tg.SecondaryButton.setParams({
-        text: 'Участвовать в розыгрыше',
+        text: lotteryHasBeenSent ? 'Изменить время розыгрыша' : 'Участвовать в розыгрыше',
         color: '#9C8CD9',
         text_color: '#ffffff',
         is_active: false,
@@ -74,7 +91,7 @@ function renderButtons(completedCount: number) {
         position: "bottom"
     })
 
-    tg.BackButton.onClick(navigateBack).show()
+    tg.BackButton.hide()
     tg.MainButton.onClick(sendPuzzleData)
     tg.SecondaryButton.onClick(navigateToLottery)
 

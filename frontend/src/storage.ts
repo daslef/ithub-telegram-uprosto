@@ -1,7 +1,7 @@
 import { type StateStorage } from 'zustand/middleware';
 import { tg } from './telegram-web-app';
 
-function timeout(ms = 3000): Promise<null> {
+function timeout(ms = 5000): Promise<null> {
     return new Promise(reject => {
         setTimeout(() => {
             reject(null)
