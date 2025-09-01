@@ -1,39 +1,29 @@
 import { renderPage } from "../router"
 import { tg } from "../telegram-web-app"
-import { cloudProvider } from "../storage"
-import type { StorageLottery } from '../types'
-import { requestContact, showPopup } from '../utils/promises'
-
-type DatetimeObject = {
-    date: number,
-    hour: number,
-    minute: number
-}
+import { useLotteryStore } from "../store/lottery"
+import { requestContact } from '../utils/promises'
+import type { Credentials, LotteryDatetime } from "../types"
 
 function sendLotteryData(date?: string, time?: string) {
     if (!date || !time) {
         return
     }
 
-    let payload: StorageLottery | undefined;
+    const datetimePayload: LotteryDatetime = { date, time };
+    let credentialsPayload: Credentials | undefined;
 
     requestContact('Подтвердите согласие на обработку персональных данных')
         .then(contact => {
-            payload = {
-                date,
-                time,
+            credentialsPayload = {
                 phone_number: contact.phone_number ?? "",
                 first_name: contact.first_name ?? "",
                 last_name: contact.last_name ?? ""
             }
-            return cloudProvider().setItem<StorageLottery>('lottery', payload)
+            useLotteryStore.getState().setCredentials(credentialsPayload)
+            useLotteryStore.getState().setDatetime(datetimePayload)
         })
-        .then(() => showPopup({
-            title: `Заявка принята`,
-            message: `Вы зарегистрированы на ${date} сентября, ${time}`
-        }))
         .then(() => {
-            tg.sendData(JSON.stringify({ payload, type: "lottery" }))
+            tg.sendData(JSON.stringify({ payload: { ...datetimePayload, ...credentialsPayload }, type: "lottery" }))
         })
         .catch(error => {
             console.log(error)
@@ -49,12 +39,12 @@ function showTimeslots(event: MouseEvent | TouchEvent) {
 
     for (const timeContainer of timeContainers) {
         timeContainer.dataset.date = selectedTimeContainer.dataset.date
-        const timeContainerDatatime = parseDatetimeAttributes(timeContainer)
-        if (!timeContainerDatatime) {
+        const timeContainerTimestamp = parseDatetimeAttributes(timeContainer)
+        if (!timeContainerTimestamp) {
             return
         }
         const timeInput = timeContainer.querySelector('input')
-        if (isDatetimePassed(timeContainerDatatime)) {
+        if (isDatetimePassed(timeContainerTimestamp)) {
             timeInput?.setAttribute('disabled', 'disabled')
         } else {
             timeInput?.removeAttribute('disabled')
@@ -62,29 +52,20 @@ function showTimeslots(event: MouseEvent | TouchEvent) {
     }
 }
 
-function parseDatetimeAttributes(element: HTMLElement): DatetimeObject | undefined {
+function parseDatetimeAttributes(element: HTMLElement): number | undefined {
     if (!element.dataset.date || !element.dataset.time) {
         return
     }
-    const [hour, minute] = element.dataset.time.split(':')
-    return {
-        date: +element.dataset.date,
-        hour: Number(hour),
-        minute: Number(minute)
-    }
+    return Date.parse(`${element.dataset.date}T${element.dataset.time}`)
 }
 
-function isDatetimePassed({ date, hour, minute }: DatetimeObject) {
-    const currentDatetime = new Date()
-
-    return currentDatetime.getDate() > date
-        || currentDatetime.getDate() === date && currentDatetime.getHours() > hour
-        || currentDatetime.getDate() === date && currentDatetime.getHours() === hour && currentDatetime.getMinutes() >= minute
+function isDatetimePassed(timestamp: number) {
+    return Date.now() > timestamp
 }
 
-function isDatePassed(date: number) {
+function isDatePassed(date: string) {
     const currentDate = new Date().getDate()
-    return currentDate > date
+    return currentDate > Date.parse(date)
 }
 
 export default function LotteryPage() {
@@ -117,7 +98,7 @@ export default function LotteryPage() {
 
     for (const dateContainer of dateContainers) {
         const date = dateContainer.dataset.date
-        if (date && isDatePassed(Number(date))) {
+        if (date && isDatePassed(date)) {
             dateContainer.querySelector('input')?.setAttribute('disabled', 'disabled')
         }
         dateContainer.addEventListener('click', showTimeslots)

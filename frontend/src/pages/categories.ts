@@ -1,27 +1,16 @@
 import { renderPage } from '../router'
 import { categories } from '../storage'
 import { tg } from '../telegram-web-app';
-import { cloudProvider } from '../storage';
-import type { Storage } from '../types';
+import { usePuzzleStore } from '../store/puzzle';
+import type { CategoryId } from '../types';
 
-function getCompletedCategories(): Promise<string[]> {
-    return new Promise((resolve) => {
-        cloudProvider()
-            .getItem<Storage>('festival')
-            .then(data => resolve(Object.keys(data)))
-            .catch(error => {
-                console.log(error)
-                resolve([])
-            })
-    })
-}
 
 function renderStatus(completedCount: number) {
     const statusElement = document.querySelector('.game-status > span')!
     statusElement.innerHTML = `(заполнено: ${completedCount}/${categories.length})`
 }
 
-function renderCategories(completedCategories: string[]) {
+function renderCategories(completedCategories: CategoryId[]) {
     const categoriesElement = document.querySelector('.categories')!
 
     for (const { id, category } of categories) {
@@ -57,15 +46,13 @@ function navigateToLottery() {
 }
 
 function sendPuzzleData() {
-    cloudProvider()
-        .getItem<Storage>('festival')
-        .then(payload => tg.sendData(JSON.stringify({ type: 'puzzle', payload })))
-        .catch(error => {
-            console.error(error)
-        })
-        .finally(() => {
-            cleanButtons()
-        })
+    const payload = usePuzzleStore.getState().items
+    cleanButtons()
+    try {
+        tg.sendData(JSON.stringify({ type: 'puzzle', payload }))
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 
@@ -98,9 +85,9 @@ function renderButtons(completedCount: number) {
 }
 
 export default async function CategoriesPage() {
-    const completedCategories = await getCompletedCategories()
+    const completedCategories = usePuzzleStore.getState().completedIds()
 
-    renderStatus(completedCategories.length)
-    renderButtons(completedCategories.length)
+    renderStatus(Object.keys(completedCategories).length)
+    renderButtons(Object.keys(completedCategories).length)
     renderCategories(completedCategories)
 }

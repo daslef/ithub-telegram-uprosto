@@ -1,7 +1,8 @@
 import { renderPage } from "../router"
-import { categories, cloudProvider } from "../storage"
+import { categories } from "../storage"
 import { tg } from "../telegram-web-app";
-import type { Storage, Company } from '../types';
+import { usePuzzleStore } from "../store/puzzle";
+import type { CompanyInfo } from '../types';
 
 
 function getCheckedElements(formElement: HTMLFormElement) {
@@ -15,7 +16,7 @@ function getCheckedElements(formElement: HTMLFormElement) {
         })
 }
 
-function renderEntry(item: Company, checked = false) {
+function renderEntry(item: CompanyInfo, checked = false) {
     const inputElement = document.createElement('input')
     inputElement.className = 'title-inp'
     inputElement.value = item.id
@@ -61,29 +62,26 @@ export default function FormPage(categoryName: string) {
         const commentValue = commentElement?.value && commentElement.value.length > 3 ? commentElement.value : ""
         const itemsValue = getCheckedElements(formElement).filter(({ tagName }) => tagName === "INPUT").map(({ value }) => value);
 
-        cloudProvider()
-            .setItem<Storage>('festival', {
-                ...storage,
-                [categoryData!.id]: {
-                    items: itemsValue,
-                    comment: commentValue
-                }
+        try {
+            usePuzzleStore.getState().updateItemById(categoryData!.id, {
+                items: itemsValue,
+                comment: commentValue
             })
-            .catch(error => {
-                console.log(error)
-            })
-            .finally(() => {
-                tg.MainButton.offClick(onSubmit)
-                renderPage('categories')
-            })
-    }
+        } catch (error) {
+            console.log(error)
+        }
 
-    const storage: Storage = {}
+        tg.MainButton.offClick(onSubmit)
+        renderPage('categories')
+    }
 
     const categoryData = categories.find(({ category }) => category === categoryName)
     const formElement = document.querySelector('.form') as HTMLFormElement
-    const formHeading = document.querySelector(".form__heading") as HTMLHeadingElement
-    const optionsElement = document.querySelector('.form__options') as HTMLDivElement
+    const formHeading = formElement.querySelector(".form__heading") as HTMLHeadingElement
+    const optionsElement = formElement.querySelector('.form__options') as HTMLDivElement
+    const commentElement = formElement.querySelector('.form__comment')
+    const spinnerElement = formElement.querySelector('.spinner')
+
 
     formHeading.textContent = categoryName
 
@@ -93,27 +91,16 @@ export default function FormPage(categoryName: string) {
     tg.BackButton.onClick(navigateBack).show()
     tg.MainButton.setText("Отправить").onClick(onSubmit).hide()
 
-    const spinner = document.createElement('img')
-    spinner.src = '/favicon.svg'
-    spinner.className = 'spinner'
-    formElement.appendChild(spinner)
+    const categoryStorage = usePuzzleStore.getState().getItemById(categoryData!.id)
 
-    cloudProvider()
-        .getItem<Storage>('festival')
-        .then(value => {
-            Object.assign(storage, value)
-            console.log(storage)
-        })
-        .catch(error => {
-            console.error(error)
-        })
-        .finally(() => {
-            spinner.remove()
-            for (const item of categoryData!.items) {
-                const isChecked = storage[categoryData!.id]?.items?.includes(item.id) ?? false
-                optionsElement.prepend(renderEntry(item, isChecked))
-            }
-            (formElement.querySelector('.form__comment') as HTMLTextAreaElement).removeAttribute('hidden')
-            onInput()
-        })
+    spinnerElement?.classList.add('hidden')
+
+    for (const item of categoryData!.items) {
+        const isChecked = categoryStorage?.items?.includes(item.id) ?? false
+        optionsElement.prepend(renderEntry(item, isChecked))
+    }
+
+    commentElement?.removeAttribute('hidden')
+
+    onInput()
 }

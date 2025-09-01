@@ -1,30 +1,26 @@
 import { renderPage } from '../router'
-import { cloudProvider } from '../storage'
-import type { Storage } from '../types'
 import { tg } from '../telegram-web-app'
+import { usePuzzleStore } from '../store/puzzle'
 
+
+function cleanButtons() {
+    tg.MainButton.hide().disable().offClick(navigateToCategories)
+    tg.SecondaryButton.hide().disable().offClick(resetAndNavigateToCategories)
+}
+
+function navigateToCategories() {
+    cleanButtons()
+    renderPage('categories')
+}
+
+function resetAndNavigateToCategories() {
+    usePuzzleStore.getState().clearAll()
+    cleanButtons()
+    renderPage('categories')
+}
 
 async function renderButtons() {
-    function cleanButtons() {
-        mainButton.hide().disable().offClick(navigateToCategories)
-        secondaryButton.hide().disable().offClick(resetAndNavigateToCategories)
-    }
-
-    function navigateToCategories() {
-        cleanButtons()
-        renderPage('categories')
-    }
-
-    function resetAndNavigateToCategories() {
-        cloudProvider().removeItem("festival").catch(error => {
-            console.error(error)
-        }).finally(() => {
-            cleanButtons()
-            renderPage('categories')
-        })
-    }
-
-    const mainButton = tg.MainButton.setParams({
+    tg.MainButton.setParams({
         text: 'Продолжить',
         color: '#9C8CD9',
         text_color: '#ffffff',
@@ -32,7 +28,7 @@ async function renderButtons() {
         is_visible: false
     })
 
-    const secondaryButton = tg.SecondaryButton.setParams({
+    tg.SecondaryButton.setParams({
         text: 'Начать сначала',
         color: '#F4EDE5',
         text_color: '#000000',
@@ -40,21 +36,18 @@ async function renderButtons() {
         is_visible: false
     })
 
-    mainButton.onClick(navigateToCategories)
-    secondaryButton.onClick(resetAndNavigateToCategories)
+    tg.MainButton.onClick(navigateToCategories)
+    tg.SecondaryButton.onClick(resetAndNavigateToCategories)
 
-    try {
-        const data = await cloudProvider().getItem<Storage>('festival')
+    await usePuzzleStore.persist.rehydrate()
+    const hasData = usePuzzleStore.getState().completedIds().length
+    console.log(hasData)
 
-        if (!Object.keys(data).length) {
-            throw new Error("No data found on festival")
-        }
-
-        mainButton.enable().show()
-        secondaryButton.enable().show()
-    } catch (error) {
-        console.error(error)
-        mainButton.setText('Начать!').enable().show()
+    if (hasData) {
+        tg.MainButton.enable().show()
+        tg.SecondaryButton.enable().show()
+    } else {
+        tg.MainButton.setText('Начать!').enable().show()
     }
 }
 
