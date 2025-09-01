@@ -1,7 +1,7 @@
 from database.models.company import CompanyRecord
 
 
-def save_puzzle_results(username, results, credentials={}):
+def save_puzzle_results(username, results, credentials):
     try:
         CompanyRecord.add_many(
             username,

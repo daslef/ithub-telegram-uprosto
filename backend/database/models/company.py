@@ -24,6 +24,9 @@ class Company(BaseModel):
 
 class CompanyRecord(BaseModel):
     username = CharField()
+    first_name = CharField()
+    last_name = CharField()
+    phone_number = CharField()
     company = ForeignKeyField(Company, backref="records")
     created_at = DateTimeField()
 
@@ -71,6 +74,9 @@ class CompanyRecord(BaseModel):
             return list(
                 CompanyRecord.select(
                     CompanyRecord.username,
+                    CompanyRecord.first_name,
+                    CompanyRecord.last_name,
+                    CompanyRecord.phone_number,
                     Company.name.alias("company"),
                     CompanyCategory.name.alias("category"),
                     CompanyRecord.created_at,

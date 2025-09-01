@@ -58,11 +58,10 @@ async def parse_data(message: types.Message):
         payload = raw.get("payload")
 
         if not data_type or not payload:
-            await message.answer("ошибка формата данных.")
-            return
+            raise Exception("Ошибка формата данных")
 
         if data_type == "puzzle":
-            credentials = raw.get("credentials")
+            credentials = raw.get("credentials", {})
             save_puzzle_results(username, payload, credentials)
 
             filename = f"{username}_brochure_{datetime.datetime.now().isoformat(timespec='minutes')}.pdf"
@@ -77,9 +76,8 @@ async def parse_data(message: types.Message):
             await message.answer(
                 f"Заявка принята! Вы зарегистрированы на {payload['date'].split('-')[-1]} сентября, {payload['time']}"
             )
-
         else:
-            await message.answer("ошибка формата данных.")
+            raise Exception("Ошибка формата данных")
 
     except Exception as e:
         logging.exception(e)
