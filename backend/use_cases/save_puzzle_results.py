@@ -1,21 +1,16 @@
-import json
 from database.models.company import CompanyRecord
 
 
-def save_puzzle_results(username, results, phone=None):
+def save_puzzle_results(username, results, credentials={}):
     try:
-        data = json.loads(results)
-
         CompanyRecord.add_many(
             username,
             [
                 company_id
-                for category_values in data.values()
+                for category_values in results.values()
                 for company_id in category_values["items"]
             ],
-            phone=phone 
+            credentials,
         )
     except Exception as e:
         print(e)
-
- 

@@ -38,6 +38,5 @@ wheels/
 **/*.env
 
 # Local database
-local.sqlite3
 local.sqlite3-shm
 local.sqlite3-wal

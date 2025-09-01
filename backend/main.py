@@ -10,11 +10,13 @@ from aiogram.filters import CommandStart
 from aiogram.enums.parse_mode import ParseMode
 
 from config import settings
-from database.models.company import CompanyRecord
 from use_cases.save_puzzle_results import save_puzzle_results
 from use_cases.save_lottery_results import save_lottery_results
 from use_cases.lottery_report import show_lottery_report, send_lottery_report
-from use_cases.companies_report import send_users_answers_report, send_companies_brochure
+from use_cases.companies_report import (
+    send_users_answers_report,
+    send_companies_brochure,
+)
 
 logging.basicConfig(level=logging.INFO)
 
@@ -54,27 +56,27 @@ async def parse_data(message: types.Message):
         raw = json.loads(message.web_app_data.data)
         data_type = raw.get("type")
         payload = raw.get("payload")
-        consent = raw.get("consent") 
-        phone = raw.get("phone") if consent else None 
 
         if not data_type or not payload:
             await message.answer("ошибка формата данных.")
             return
 
         if data_type == "puzzle":
-            save_puzzle_results(username, payload, phone=phone)
+            credentials = raw.get("credentials")
+            save_puzzle_results(username, payload, credentials)
 
             filename = f"{username}_brochure_{datetime.datetime.now().isoformat(timespec='minutes')}.pdf"
             await message.answer_document(
                 types.BufferedInputFile(
-                    file=send_companies_brochure(username),
-                    filename=filename
+                    file=send_companies_brochure(username), filename=filename
                 )
             )
 
         elif data_type == "lottery":
             save_lottery_results(username, payload)
-            await message.answer("Регистрация на розыгрыш сохранена или обновлена! B)")
+            await message.answer(
+                f"Заявка принята! Вы зарегистрированы на {payload['date'].split('-')[-1]} сентября, {payload['time']}"
+            )
 
         else:
             await message.answer("ошибка формата данных.")

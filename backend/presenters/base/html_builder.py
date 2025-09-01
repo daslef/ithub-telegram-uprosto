@@ -1,5 +1,4 @@
 from .abc import AbstractBuilder
-from prettytable import PrettyTable
 
 
 class HTMLBuilder(AbstractBuilder):
@@ -10,11 +9,7 @@ class HTMLBuilder(AbstractBuilder):
         return f"<em>{text}</em>"
 
     def _render_table(self, data: list[dict]):
-        # table = PrettyTable(["username"])
-        # for item in data:
-        #     table.add_row([item["username"]])
-        # return f"<pre>{table.get_string()}</pre>"
-        return f"<pre>{'\n'.join(item['username'] for item in data)}</pre>"
+        return f"<pre>{'\n'.join(f'{item["username"]} ({item["phone_number"]})' for item in data)}</pre>"
 
     def build(self, data):
         match data:

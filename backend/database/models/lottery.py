@@ -10,10 +10,20 @@ class LotterySlot(BaseModel):
 
 class LotteryRecord(BaseModel):
     username = CharField()
+    first_name = CharField()
+    last_name = CharField()
+    phone_number = CharField()
     slot = ForeignKeyField(LotterySlot, backref="records")
     created_at = DateTimeField()
 
-    def add(username: str, date: str, time: str):
+    def add(
+        username: str,
+        date: str,
+        time: str,
+        first_name: str,
+        last_name: str,
+        phone_number: str,
+    ):
         try:
             row_slot = LotterySlot.get(date=date, time=time)
 
@@ -26,6 +36,9 @@ class LotteryRecord(BaseModel):
 
             return LotteryRecord.create(
                 username=username,
+                first_name=first_name,
+                last_name=last_name,
+                phone_number=phone_number,
                 slot=row_slot,
                 created_at=datetime.datetime.now(),
             )
@@ -34,11 +47,19 @@ class LotteryRecord(BaseModel):
             print(e)
             print(f"No slot with date {date} and time {time}")
 
+    def update_slot(username, date, time):
+        user = LotteryRecord.get(LotteryRecord.username == username)
+        user.slot = LotterySlot.get(date=date, time=time)
+        user.save()
+
     def get_all():
         try:
             query = (
                 LotteryRecord.select(
                     LotteryRecord.username.alias("username"),
+                    LotteryRecord.first_name,
+                    LotteryRecord.last_name,
+                    LotteryRecord.phone_number,
                     LotterySlot.date.alias("date"),
                     LotterySlot.time.alias("time"),
                 )
