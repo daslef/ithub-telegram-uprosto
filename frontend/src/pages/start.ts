@@ -1,22 +1,19 @@
 import { renderPage } from '../router'
 import { tg } from '../telegram-web-app'
+
 import { usePuzzleStore } from '../store/puzzle'
 import { useCredentialsStore } from '../store/credentials'
 import { useLotteryStore } from '../store/lottery';
 
-
 function navigateToCategories() {
-    tg.MainButton.hide().disable().offClick(navigateToCategories)
-    tg.SecondaryButton.hide().disable().offClick(resetAndNavigateToCategories)
-
     renderPage('categories')
 }
 
+function navigateToMap() {
+    renderPage('map')
+}
 
 function navigateToLottery() {
-    tg.MainButton.hide().disable().offClick(navigateToLottery)
-    tg.SecondaryButton.hide().disable().offClick(resetAndNavigateToCategories)
-
     renderPage('lottery')
 }
 
@@ -31,37 +28,35 @@ function resetAndNavigateToCategories() {
 
 export default async function StartPage() {
     tg.MainButton.setParams({
-        text: 'Продолжить',
+        text: 'Образовательный паззл',
         color: '#9C8CD9',
         text_color: '#ffffff',
-        is_active: false,
-        is_visible: false
+        is_active: true,
+        is_visible: true
     })
 
     tg.SecondaryButton.setParams({
-        text: 'Начать сначала',
+        text: 'Карта фестиваля',
         color: '#F4EDE5',
         text_color: '#000000',
-        is_active: false,
-        is_visible: false,
+        is_active: true,
+        is_visible: true,
         position: "bottom"
-    })
+    }).onClick(navigateToMap)
 
     const puzzleHasBeenSent = usePuzzleStore.getState().hasBeenSent
     const lotteryHasBeenSent = useLotteryStore.getState().hasBeenSent
+    const lotteryHasBeenPassed = useLotteryStore.getState().hasBeenPassed()
 
-    const hasData = usePuzzleStore.getState().completedIds().length
-
-    if (puzzleHasBeenSent && lotteryHasBeenSent) {
-        tg.MainButton.setText('Изменить время розыгрыша').enable().show().onClick(navigateToLottery)
-        tg.SecondaryButton.enable().show().onClick(resetAndNavigateToCategories)
+    if (lotteryHasBeenPassed) {
+        tg.MainButton.disable().hide()
+    } else if (lotteryHasBeenSent) {
+        tg.MainButton.setText('Изменить время розыгрыша').onClick(navigateToLottery)
     } else if (puzzleHasBeenSent) {
-        tg.MainButton.setText('Участвовать в розыгрыше').enable().show().onClick(navigateToLottery)
-        tg.SecondaryButton.enable().show().onClick(resetAndNavigateToCategories)
-    } else if (hasData) {
-        tg.MainButton.enable().show().onClick(navigateToCategories)
-        tg.SecondaryButton.enable().show().onClick(resetAndNavigateToCategories)
+        tg.MainButton.setText('Участвовать в розыгрыше').onClick(navigateToLottery)
     } else {
-        tg.MainButton.setText('Начать!').enable().show().onClick(navigateToCategories)
+        tg.MainButton.onClick(navigateToCategories)
     }
+
+    document.getElementById("clear-btn")?.addEventListener("click", resetAndNavigateToCategories, { once: true });
 }

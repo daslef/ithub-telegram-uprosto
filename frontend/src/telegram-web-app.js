@@ -189,6 +189,10 @@
     };
 
     function offEvent(eventType, callback) {
+        if (eventType.includes('ButtonClicked')) {
+            eventHandlers[eventType] = []
+            return;
+        }
         if (eventHandlers[eventType] === undefined) {
             return;
         }
@@ -196,7 +200,7 @@
         if (index === -1) {
             return;
         }
-        eventHandlers[eventType].splice(index, 1);
+        eventHandlers[eventType].splice(index, 1)
     };
 
     function openProtoUrl(url) {
@@ -255,7 +259,7 @@
         offEvent: offEvent,
         postEvent: postEvent,
         receiveEvent: receiveEvent,
-        callEventCallbacks: callEventCallbacks
+        callEventCallbacks: callEventCallbacks,
     };
 
     window.Telegram.Utils = {
@@ -438,6 +442,7 @@ function getWebApp() {
     function offWebViewEvent(eventType, callback) {
         WebView.offEvent('webview:' + eventType, callback);
     };
+
 
     function setCssProperty(name, value) {
         var root = document.documentElement;
@@ -2821,6 +2826,7 @@ function getWebApp() {
     WebApp.offEvent = function (eventType, callback) {
         offWebViewEvent(eventType, callback);
     };
+
     WebApp.sendData = function (data) {
         if (!data || !data.length) {
             console.error('[Telegram.WebApp] Data is required', data);

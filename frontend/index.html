@@ -41,6 +41,7 @@
                 подарков, который
                 состояться в 13:50, 15:50 и 17:50 в каждый из дней Фестиваля.
             </p>
+            <button id="clear-btn" class="btn clear-btn">Сбросить ключи</button>
         </section>
     </template>
 
@@ -50,7 +51,7 @@
         </figure>
 
         <!-- <h1 class="game-heading">Собери свой образовательный пазл</h1> -->
-        <h3 class="game-status">Выберите интересующие категории&nbsp;<br /><span></span></h3>
+        <h3 class="game-status">Выберите интересующие категории&nbsp;<br />(заполнено <span>&nbsp;</span> / 9)</h3>
         <section class="categories">
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
                 y="0px" viewBox="0 0 566.9 566.9" style="enable-background:new 0 0 566.9 566.9;" xml:space="preserve">
@@ -274,6 +275,13 @@
                 </div>
             </section>
         </article>
+    </template>
+
+    <template id="map">
+        <section class="map-page">
+            <iframe class="map-iframe" src="https://prosto.education/info/map/map.html" title="Интерактивная карта"
+                loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="fullscreen"></iframe>
+        </section>
     </template>
 
     <main id="app"></main>

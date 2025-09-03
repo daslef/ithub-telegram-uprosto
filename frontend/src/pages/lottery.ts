@@ -1,29 +1,15 @@
 import { renderPage } from "../router"
 import { tg } from "../telegram-web-app"
+import { isDatePassed, isTimestampPassed } from "../utils/time";
 import { useLotteryStore } from "../store/lottery"
 import { useCredentialsStore } from '../store/credentials';
-import { requestContact } from '../utils/promises'
 
 async function sendLotteryData(date?: string, time?: string) {
     if (!date || !time) {
         return
     }
 
-    const hasCredentialsSet = useCredentialsStore.getState().isSet()
     useLotteryStore.getState().setDatetime({ date, time })
-
-    if (!hasCredentialsSet) {
-        try {
-            const contact = await requestContact('Подтвердите согласие на обработку персональных данных')
-            useCredentialsStore.getState().setCredentials({
-                phone_number: contact.phone_number ?? "",
-                first_name: contact.first_name ?? "",
-                last_name: contact.last_name ?? ""
-            })
-        } catch (error) {
-            console.log(error)
-        }
-    }
 
     try {
         const credentialsPayload = useCredentialsStore.getState().credentials
@@ -48,7 +34,7 @@ function showTimeslots(event: MouseEvent | TouchEvent) {
             return
         }
         const timeInput = timeContainer.querySelector('input')
-        if (isDatetimePassed(timeContainerTimestamp)) {
+        if (isTimestampPassed(timeContainerTimestamp)) {
             timeInput?.setAttribute('disabled', 'disabled')
         } else {
             timeInput?.removeAttribute('disabled')
@@ -63,23 +49,8 @@ function parseDatetimeAttributes(element: HTMLElement): number | undefined {
     return Date.parse(`${element.dataset.date}T${element.dataset.time}`)
 }
 
-function isDatetimePassed(timestamp: number) {
-    return Date.now() > timestamp
-}
-
-function isDatePassed(date: string) {
-    const currentDate = new Date().getDate()
-    return currentDate > Date.parse(date)
-}
-
 export default function LotteryPage() {
-    function cleanButtons() {
-        tg.BackButton.offClick(navigateBackToCategories).hide()
-        registerButton.offClick(async () => await sendLotteryData(registrationDate, registrationTime)).hide().disable()
-    }
-
     function navigateBackToCategories() {
-        cleanButtons()
         renderPage('categories')
     }
 
@@ -93,7 +64,6 @@ export default function LotteryPage() {
         is_visible: false
     })
 
-    tg.SecondaryButton.hide()
     tg.BackButton.onClick(navigateBackToCategories).show()
     registerButton.onClick(async () => await sendLotteryData(registrationDate, registrationTime))
 
