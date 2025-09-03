@@ -371,7 +371,7 @@ body {
     display: block;
 }
 
-.btn-map {
+.clear-btn {
     display: inline-block;
     width: min(100%, 420px);
     margin: 16px auto 0;
