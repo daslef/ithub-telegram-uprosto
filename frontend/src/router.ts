@@ -3,6 +3,10 @@ import CategoriesPage from "./pages/categories";
 import ItemsPage from "./pages/items";
 import LotteryPage from "./pages/lottery";
 
+import { useCredentialsStore } from "./store/credentials";
+import { useLotteryStore } from "./store/lottery";
+import { usePuzzleStore } from "./store/puzzle";
+
 export type Page = 'start' | 'categories' | 'items' | 'lottery'
 type Category = string | undefined
 
@@ -34,7 +38,16 @@ export async function renderPage(page: Page, category?: Category) {
     app.innerHTML = ''
     app.appendChild(pageTemplate.content.cloneNode(true))
 
-    await pageFn()
+    await pageFn();
 }
 
-await renderPage("categories");
+Promise.all([
+    usePuzzleStore.persist.rehydrate(),
+    useLotteryStore.persist.rehydrate(),
+]).then(async () => {
+    console.log(useCredentialsStore.getState())
+    console.log(useLotteryStore.getState())
+    console.log(usePuzzleStore.getState())
+    await renderPage("start");
+})
+

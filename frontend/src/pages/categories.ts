@@ -1,27 +1,19 @@
 import { renderPage } from '../router'
 import { categories } from '../storage'
 import { tg } from '../telegram-web-app';
-import { cloudProvider } from '../storage';
-import type { Storage } from '../types';
+import { usePuzzleStore } from '../store/puzzle';
+import { useLotteryStore } from '../store/lottery';
+import { useCredentialsStore } from '../store/credentials';
+import { requestContact } from '../utils/promises';
+import type { CategoryId, PuzzleDTO } from '../types';
 
-function getCompletedCategories(): Promise<string[]> {
-    return new Promise((resolve) => {
-        cloudProvider()
-            .getItem<Storage>('festival')
-            .then(data => resolve(Object.keys(data)))
-            .catch(error => {
-                console.log(error)
-                resolve([])
-            })
-    })
-}
 
 function renderStatus(completedCount: number) {
     const statusElement = document.querySelector('.game-status > span')!
     statusElement.innerHTML = `(заполнено: ${completedCount}/${categories.length})`
 }
 
-function renderCategories(completedCategories: string[]) {
+function renderCategories(completedCategories: CategoryId[]) {
     const categoriesElement = document.querySelector('.categories')!
 
     for (const { id, category } of categories) {
@@ -41,14 +33,8 @@ function renderCategories(completedCategories: string[]) {
 }
 
 function cleanButtons() {
-    tg.BackButton.offClick(navigateBack).hide()
     tg.MainButton.hide().disable().offClick(sendPuzzleData)
     tg.SecondaryButton.hide().disable().offClick(navigateToLottery)
-}
-
-function navigateBack() {
-    cleanButtons()
-    renderPage('start')
 }
 
 function navigateToLottery() {
@@ -56,20 +42,38 @@ function navigateToLottery() {
     renderPage("lottery")
 }
 
-function sendPuzzleData() {
-    cloudProvider()
-        .getItem<Storage>('festival')
-        .then(payload => tg.sendData(JSON.stringify({ type: 'puzzle', payload })))
-        .catch(error => {
-            console.error(error)
-        })
-        .finally(() => {
-            cleanButtons()
-        })
+async function sendPuzzleData() {
+    cleanButtons()
+
+    try {
+        const hasCredentialsSet = useCredentialsStore.getState().isSet()
+        if (!hasCredentialsSet) {
+
+            const contact = await requestContact('Подтвердите согласие на обработку персональных данных')
+            useCredentialsStore.getState().setCredentials({
+                phone_number: contact.phone_number ?? "",
+                first_name: contact.first_name ?? "",
+                last_name: contact.last_name ?? ""
+            })
+        }
+
+        const data: PuzzleDTO = {
+            type: 'puzzle',
+            payload: usePuzzleStore.getState().items,
+            credentials: useCredentialsStore.getState().credentials
+        }
+
+        usePuzzleStore.getState().markAsSent()
+        tg.sendData(JSON.stringify(data))
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 
 function renderButtons(completedCount: number) {
+    const lotteryHasBeenSent = useLotteryStore.getState().hasBeenSent
+
     tg.MainButton.setParams({
         text: 'Сформировать пазл',
         color: '#FF9448',
@@ -79,7 +83,7 @@ function renderButtons(completedCount: number) {
     })
 
     tg.SecondaryButton.setParams({
-        text: 'Участвовать в розыгрыше',
+        text: lotteryHasBeenSent ? 'Изменить время розыгрыша' : 'Участвовать в розыгрыше',
         color: '#9C8CD9',
         text_color: '#ffffff',
         is_active: false,
@@ -87,7 +91,7 @@ function renderButtons(completedCount: number) {
         position: "bottom"
     })
 
-    tg.BackButton.onClick(navigateBack).show()
+    tg.BackButton.hide()
     tg.MainButton.onClick(sendPuzzleData)
     tg.SecondaryButton.onClick(navigateToLottery)
 
@@ -98,9 +102,9 @@ function renderButtons(completedCount: number) {
 }
 
 export default async function CategoriesPage() {
-    const completedCategories = await getCompletedCategories()
+    const completedCategories = usePuzzleStore.getState().completedIds()
 
-    renderStatus(completedCategories.length)
-    renderButtons(completedCategories.length)
+    renderStatus(Object.keys(completedCategories).length)
+    renderButtons(Object.keys(completedCategories).length)
     renderCategories(completedCategories)
 }

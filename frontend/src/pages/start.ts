@@ -1,30 +1,36 @@
 import { renderPage } from '../router'
-import { cloudProvider } from '../storage'
-import type { Storage } from '../types'
 import { tg } from '../telegram-web-app'
+import { usePuzzleStore } from '../store/puzzle'
+import { useCredentialsStore } from '../store/credentials'
+import { useLotteryStore } from '../store/lottery';
 
 
-async function renderButtons() {
-    function cleanButtons() {
-        mainButton.hide().disable().offClick(navigateToCategories)
-        secondaryButton.hide().disable().offClick(resetAndNavigateToCategories)
-    }
+function navigateToCategories() {
+    tg.MainButton.hide().disable().offClick(navigateToCategories)
+    tg.SecondaryButton.hide().disable().offClick(resetAndNavigateToCategories)
 
-    function navigateToCategories() {
-        cleanButtons()
-        renderPage('categories')
-    }
+    renderPage('categories')
+}
 
-    function resetAndNavigateToCategories() {
-        cloudProvider().removeItem("festival").catch(error => {
-            console.error(error)
-        }).finally(() => {
-            cleanButtons()
-            renderPage('categories')
-        })
-    }
 
-    const mainButton = tg.MainButton.setParams({
+function navigateToLottery() {
+    tg.MainButton.hide().disable().offClick(navigateToLottery)
+    tg.SecondaryButton.hide().disable().offClick(resetAndNavigateToCategories)
+
+    renderPage('lottery')
+}
+
+
+function resetAndNavigateToCategories() {
+    usePuzzleStore.getState().clearAll()
+    useCredentialsStore.getState().clearAll()
+    useLotteryStore.getState().clearAll()
+    navigateToCategories()
+}
+
+
+export default async function StartPage() {
+    tg.MainButton.setParams({
         text: 'Продолжить',
         color: '#9C8CD9',
         text_color: '#ffffff',
@@ -32,32 +38,30 @@ async function renderButtons() {
         is_visible: false
     })
 
-    const secondaryButton = tg.SecondaryButton.setParams({
+    tg.SecondaryButton.setParams({
         text: 'Начать сначала',
         color: '#F4EDE5',
         text_color: '#000000',
         is_active: false,
-        is_visible: false
+        is_visible: false,
+        position: "bottom"
     })
 
-    mainButton.onClick(navigateToCategories)
-    secondaryButton.onClick(resetAndNavigateToCategories)
+    const puzzleHasBeenSent = usePuzzleStore.getState().hasBeenSent
+    const lotteryHasBeenSent = useLotteryStore.getState().hasBeenSent
 
-    try {
-        const data = await cloudProvider().getItem<Storage>('festival')
+    const hasData = usePuzzleStore.getState().completedIds().length
 
-        if (!Object.keys(data).length) {
-            throw new Error("No data found on festival")
-        }
-
-        mainButton.enable().show()
-        secondaryButton.enable().show()
-    } catch (error) {
-        console.error(error)
-        mainButton.setText('Начать!').enable().show()
+    if (puzzleHasBeenSent && lotteryHasBeenSent) {
+        tg.MainButton.setText('Изменить время розыгрыша').enable().show().onClick(navigateToLottery)
+        tg.SecondaryButton.enable().show().onClick(resetAndNavigateToCategories)
+    } else if (puzzleHasBeenSent) {
+        tg.MainButton.setText('Участвовать в розыгрыше').enable().show().onClick(navigateToLottery)
+        tg.SecondaryButton.enable().show().onClick(resetAndNavigateToCategories)
+    } else if (hasData) {
+        tg.MainButton.enable().show().onClick(navigateToCategories)
+        tg.SecondaryButton.enable().show().onClick(resetAndNavigateToCategories)
+    } else {
+        tg.MainButton.setText('Начать!').enable().show().onClick(navigateToCategories)
     }
-}
-
-export default async function StartPage() {
-    await renderButtons()
 }

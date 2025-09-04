@@ -1,6 +1,7 @@
 from itertools import groupby
 from presenters.base.pdf_builder import PDFBuilder
 from presenters.abc import AbstractPresenter
+from fpdf import FPDF
 
 # LotteryData = TypedDict("LotteryData", {"username": str, "date": str, "time": str})
 

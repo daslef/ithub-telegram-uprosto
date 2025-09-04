@@ -46,7 +46,8 @@ body {
 }
 
 .logo_heading {
-    width: min(100%, 420px)
+    width: min(100%, 420px);
+    margin: 0 auto;
 }
 
 .logo_heading__logo {
@@ -67,7 +68,7 @@ body {
     margin-top: 20px;
     text-align: center;
     color: var(--color-orange);
-    font-size: 1rem;
+    /* font-size: 1rem; */
 }
 
 .game-status {
@@ -339,4 +340,8 @@ body {
     stroke-width: 1.5;
     stroke-linecap: round;
     stroke-linejoin: round;
+}
+
+.hidden {
+    visibility: hidden;
 }

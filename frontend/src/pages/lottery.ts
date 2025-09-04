@@ -1,69 +1,54 @@
 import { renderPage } from "../router"
 import { tg } from "../telegram-web-app"
-import { cloudProvider } from "../storage"
-import type { StorageLottery } from '../types'
+import { useLotteryStore } from "../store/lottery"
+import { useCredentialsStore } from '../store/credentials';
+import { requestContact } from '../utils/promises'
 
-type DatetimeObject = {
-    date: number,
-    hour: number,
-    minute: number
-}
-
-function sendLotteryData(date?: string, time?: string) {
+async function sendLotteryData(date?: string, time?: string) {
     if (!date || !time) {
         return
     }
 
-    tg.showConfirm(`Подтвердите согласие на обработку персональных данных`, (isOK) => {
-        if (!isOK) {
-            return
+    const hasCredentialsSet = useCredentialsStore.getState().isSet()
+    useLotteryStore.getState().setDatetime({ date, time })
+
+    if (!hasCredentialsSet) {
+        try {
+            const contact = await requestContact('Подтвердите согласие на обработку персональных данных')
+            useCredentialsStore.getState().setCredentials({
+                phone_number: contact.phone_number ?? "",
+                first_name: contact.first_name ?? "",
+                last_name: contact.last_name ?? ""
+            })
+        } catch (error) {
+            console.log(error)
         }
+    }
 
-        tg.requestContact((success, response) => {
-            if (success) {
-                const contact = (response as RequestContactResponseSent).responseUnsafe.contact
-                const registrationDatetime = `${date} августа, ${time}`
-                const payload = {
-                    date,
-                    time,
-                    phone_number: contact.phone_number ?? "",
-                    first_name: contact.first_name ?? "",
-                    last_name: contact.last_name ?? ""
-                }
-
-                tg.showPopup({ title: `Заявка принята`, message: `Вы зарегистрированы на ${registrationDatetime}` }, (_) => {
-                    cloudProvider()
-                        .setItem<StorageLottery>('lottery', payload)
-                        .catch(error => {
-                            console.log(error)
-                        })
-                        .then(() => {
-                            tg.sendData(JSON.stringify({ payload, type: "lottery" }))
-                        })
-                        .catch(error => {
-                            console.log(error)
-                        })
-                })
-            }
-        })
-    })
+    try {
+        const credentialsPayload = useCredentialsStore.getState().credentials
+        useLotteryStore.getState().markAsSent()
+        tg.sendData(JSON.stringify({ payload: { date, time, ...credentialsPayload }, type: "lottery" }))
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 function showTimeslots(event: MouseEvent | TouchEvent) {
-    const detailsElement = document.querySelector<HTMLDetailsElement>('.lottery-container')!
-    const timeContainers = document.querySelectorAll<HTMLElement>('.lottery-container > div > .lottery-input-container')
+    const tileGroupElement = document.querySelector<HTMLDivElement>('.lottery-tile-group--time')!
+    const timeContainers = tileGroupElement.querySelectorAll<HTMLDivElement>('.lottery-input-container')
     const selectedTimeContainer = event.currentTarget as HTMLElement
 
-    detailsElement.open = true
+    tileGroupElement.classList.remove('hidden')
 
     for (const timeContainer of timeContainers) {
         timeContainer.dataset.date = selectedTimeContainer.dataset.date
-        const timeContainerDatatime = parseDatetimeAttributes(timeContainer)
-        if (!timeContainerDatatime) {
+        const timeContainerTimestamp = parseDatetimeAttributes(timeContainer)
+        if (!timeContainerTimestamp) {
             return
         }
         const timeInput = timeContainer.querySelector('input')
-        if (isDatetimePassed(timeContainerDatatime)) {
+        if (isDatetimePassed(timeContainerTimestamp)) {
             timeInput?.setAttribute('disabled', 'disabled')
         } else {
             timeInput?.removeAttribute('disabled')
@@ -71,44 +56,26 @@ function showTimeslots(event: MouseEvent | TouchEvent) {
     }
 }
 
-function dateTimeNow() {
-    const now = new Date()
-    return {
-        date: now.getDate(),
-        hour: now.getHours(),
-        minute: now.getMinutes()
-    }
-}
-
-function parseDatetimeAttributes(element: HTMLElement): DatetimeObject | undefined {
+function parseDatetimeAttributes(element: HTMLElement): number | undefined {
     if (!element.dataset.date || !element.dataset.time) {
         return
     }
-    const [hour, minute] = element.dataset.time.split(':')
-    return {
-        date: +element.dataset.date,
-        hour: Number(hour),
-        minute: Number(minute)
-    }
+    return Date.parse(`${element.dataset.date}T${element.dataset.time}`)
 }
 
-function isDatetimePassed({ date, hour, minute }: DatetimeObject) {
-    const currentDatetime = dateTimeNow()
-    return currentDatetime.date > date
-        || currentDatetime.date === date && currentDatetime.hour > hour
-        || currentDatetime.date === date && currentDatetime.hour === hour && currentDatetime.minute >= minute
+function isDatetimePassed(timestamp: number) {
+    return Date.now() > timestamp
 }
 
-function isDatePassed(date: number) {
-    const currentDate = dateTimeNow().date
-    return currentDate > date
+function isDatePassed(date: string) {
+    const currentDate = new Date().getDate()
+    return currentDate > Date.parse(date)
 }
-
 
 export default function LotteryPage() {
     function cleanButtons() {
         tg.BackButton.offClick(navigateBackToCategories).hide()
-        registerButton.offClick(() => sendLotteryData(registrationDate, registrationTime)).hide().disable()
+        registerButton.offClick(async () => await sendLotteryData(registrationDate, registrationTime)).hide().disable()
     }
 
     function navigateBackToCategories() {
@@ -116,26 +83,29 @@ export default function LotteryPage() {
         renderPage('categories')
     }
 
+    const lotteryHasBeenSent = useLotteryStore.getState().hasBeenSent
+
     const registerButton = tg.MainButton.setParams({
-        text: 'Отправить данные',
+        text: lotteryHasBeenSent ? 'Изменить данные' : 'Отправить данные',
         color: '#FF9448',
         text_color: '#ffffff',
         is_active: false,
         is_visible: false
     })
 
+    tg.SecondaryButton.hide()
     tg.BackButton.onClick(navigateBackToCategories).show()
-    registerButton.onClick(() => sendLotteryData(registrationDate, registrationTime))
+    registerButton.onClick(async () => await sendLotteryData(registrationDate, registrationTime))
 
     let registrationDate: string | undefined;
     let registrationTime: string | undefined;
 
-    const dateContainers = document.querySelectorAll<HTMLElement>('.lottery-summary .lottery-input-container')
-    const timeContainers = document.querySelectorAll<HTMLElement>('.lottery-container > div > .lottery-input-container')
+    const dateContainers = document.querySelectorAll<HTMLElement>('.lottery-tile-group--date .lottery-input-container')
+    const timeContainers = document.querySelectorAll<HTMLElement>('.lottery-tile-group--time .lottery-input-container')
 
     for (const dateContainer of dateContainers) {
         const date = dateContainer.dataset.date
-        if (date && isDatePassed(Number(date))) {
+        if (date && isDatePassed(date)) {
             dateContainer.querySelector('input')?.setAttribute('disabled', 'disabled')
         }
         dateContainer.addEventListener('click', showTimeslots)
@@ -150,5 +120,16 @@ export default function LotteryPage() {
                 registerButton.enable().show()
             }
         })
+    }
+
+    if (lotteryHasBeenSent) {
+        registrationDate = useLotteryStore.getState().date!;
+        registrationTime = useLotteryStore.getState().time!;
+
+        const currentDateContainer = [...dateContainers].find(dateContainer => dateContainer.dataset.date === registrationDate)
+        currentDateContainer?.dispatchEvent(new MouseEvent('click'))
+
+        const currentTimeContainer = [...timeContainers].find(timeContainer => timeContainer.dataset.time === registrationTime)
+        currentTimeContainer?.dispatchEvent(new MouseEvent('click'))
     }
 }
