@@ -37,8 +37,8 @@ export default async function StartPage() {
 
     tg.SecondaryButton.setParams({
         text: 'Карта фестиваля',
-        color: '#F4EDE5',
-        text_color: '#000000',
+        color: '#FF9448',
+        text_color: '#ffffff',
         is_active: true,
         is_visible: true,
         position: "bottom"
