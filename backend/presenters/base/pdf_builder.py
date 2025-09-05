@@ -25,7 +25,7 @@ class PDFBuilder(FPDF, AbstractBuilder):
     _COLOR_DIVIDER = (230, 222, 255)
     _COLOR_SUBTLE = (180, 170, 250)
     _COLOR_BLACKISH = (33, 37, 41)
-    _COLOR_BG_DOODLE = (236, 231, 255)    
+    _COLOR_BG_DOODLE = (236, 231, 255)
 
     def __init__(self):
         super().__init__(orientation="P", unit="mm", format="A4")
@@ -200,8 +200,5 @@ class PDFBuilder(FPDF, AbstractBuilder):
         self.ln(5)
 
     def build(self) -> bytes:
-        """
-        Возвращает байты PDF для aiogram.types.BufferedInputFile(file=...).
-        """
         pdf_bytes_like = self.output(dest="S")
         return bytes(pdf_bytes_like)

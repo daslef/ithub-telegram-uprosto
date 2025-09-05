@@ -1,5 +1,28 @@
+from random import choice
+from peewee import IntegrityError
+
 from .models.company import CompanyRecord
 from .models.lottery import LotteryRecord
+
+
+def seed_lottery_records():
+    slots_by_date = {
+        "2025-09-06": ["13:50:00", "15:50:00", "16:50:00"],
+        "2025-09-07": ["13:50:00", "15:50:00"],
+    }
+
+    try:
+        for ix in range(20):
+            username = f"testuser_{ix}"
+            date = choice(list(slots_by_date.keys()))
+            time = choice(slots_by_date[date])
+            first_name = "testuser"
+            last_name = str(ix)
+            phone_number = ""
+            LotteryRecord.add(username, date, time, first_name, last_name, phone_number)
+
+    except IntegrityError:
+        print("Lottery records already exists")
 
 
 def test_add_company_record(username: str, company_id: str):

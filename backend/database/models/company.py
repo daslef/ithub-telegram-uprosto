@@ -16,9 +16,11 @@ class CompanyCategory(BaseModel):
 
 class Company(BaseModel):
     id = CharField(unique=True, primary_key=True)
-    name = CharField(unique=True)
+    name = CharField()
     description = CharField()
-    contacts = CharField()
+    address = CharField()
+    website = CharField()
+    vk = CharField()
     category = ForeignKeyField(CompanyCategory, backref="companies")
 
 
@@ -95,7 +97,9 @@ class CompanyRecord(BaseModel):
                 CompanyRecord.select(
                     Company.name,
                     Company.description,
-                    Company.contacts,
+                    Company.address,
+                    Company.vk,
+                    Company.website,
                     CompanyCategory.name.alias("category"),
                 )
                 .join(Company)
