@@ -21,14 +21,20 @@ async function sendLotteryData(date?: string, time?: string) {
 }
 
 function showTimeslots(event: MouseEvent | TouchEvent) {
-    const tileGroupElement = document.querySelector<HTMLDivElement>('.lottery-tile-group--time')!
-    const timeContainers = tileGroupElement.querySelectorAll<HTMLDivElement>('.lottery-input-container')
-    const selectedTimeContainer = event.currentTarget as HTMLElement
+    const selectedDateContainer = event.currentTarget as HTMLElement
+    const selectedDate = selectedDateContainer.dataset.date
 
-    tileGroupElement.classList.remove('hidden')
+    const tileGroupElements = document.querySelectorAll<HTMLDivElement>(`.lottery-tile-group--time`)
+    const tileGroupActiveElement = [...tileGroupElements].find(element => element.dataset.date === selectedDate)
+    const tileGroupInactiveElement = [...tileGroupElements].find(element => element.dataset.date !== selectedDate)
+
+    const timeContainers = tileGroupActiveElement?.querySelectorAll<HTMLDivElement>('.lottery-input-container') || []
+
+    tileGroupActiveElement?.classList.remove('hidden')
+    tileGroupInactiveElement?.classList.add('hidden')
 
     for (const timeContainer of timeContainers) {
-        timeContainer.dataset.date = selectedTimeContainer.dataset.date
+        timeContainer.dataset.date = selectedDate
         const timeContainerTimestamp = parseDatetimeAttributes(timeContainer)
         if (!timeContainerTimestamp) {
             return
