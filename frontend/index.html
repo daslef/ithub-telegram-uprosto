@@ -309,9 +309,32 @@
     </template>
 
     <template id="map">
-        <section class="map-page">
-            <iframe class="map-iframe" src="https://prosto.education/info/map/map.html" title="Интерактивная карта"
-                loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="fullscreen"></iframe>
+        <section class="map-select">
+            <figure class="logo_heading">
+                <img class="logo_heading__logo" src="/logo.svg" alt="логотип просто учиться" />
+                <figcaption class="logo_heading__sub">
+                    фестиваль детского образования
+                </figcaption>
+            </figure>
+
+            <h2 class="game-heading">Выберите карту фестиваля</h2>
+
+            <div class="map-select__buttons">
+                <button id="btn-map-609" class="btn map-select__btn map-select__btn--lavender"
+                    data-url="https://prosto.education/info/map/609/map.html">
+                    Карта на 6 сентября
+                </button>
+
+                <button id="btn-map-709" class="btn map-select__btn map-select__btn--orange"
+                    data-url="https://prosto.education/info/map/709/map.html">
+                    Карта на 7 сентября
+                </button>
+            </div>
+        </section>
+
+        <section class="map-page hidden">
+            <iframe class="map-iframe" src="" title="Интерактивная карта" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade" allow="fullscreen" allowfullscreen></iframe>
         </section>
     </template>
 

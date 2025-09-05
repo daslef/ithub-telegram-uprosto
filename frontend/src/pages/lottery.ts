@@ -56,10 +56,6 @@ function parseDatetimeAttributes(element: HTMLElement): number | undefined {
 }
 
 export default function LotteryPage() {
-    function navigateBackToCategories() {
-        renderPage('categories')
-    }
-
     const lotteryHasBeenSent = useLotteryStore.getState().hasBeenSent
 
     const registerButton = tg.MainButton.setParams({
@@ -71,7 +67,7 @@ export default function LotteryPage() {
     })
 
     tg.SecondaryButton.hide()
-    tg.BackButton.onClick(navigateBackToCategories).show()
+    tg.BackButton.onClick(() => { renderPage('start') }).show()
     registerButton.onClick(async () => await sendLotteryData(registrationDate, registrationTime))
 
     let registrationDate: string | undefined;
