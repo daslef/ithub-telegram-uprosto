@@ -21,7 +21,6 @@ export type CategoryId = string
 export type CompanyInfo = {
     id: string,
     title: string,
-    contacts: string
 }
 
 export type PuzzleStorage = { [K: CategoryId]: PuzzleItem }

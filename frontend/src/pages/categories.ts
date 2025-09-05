@@ -57,8 +57,6 @@ async function sendPuzzleData() {
 
 
 function renderButtons(completedCount: number) {
-    const lotteryHasBeenSent = useLotteryStore.getState().hasBeenSent
-
     tg.MainButton.setParams({
         text: 'Сформировать пазл',
         color: '#FF9448',
