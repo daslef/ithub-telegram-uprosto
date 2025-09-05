@@ -22,11 +22,9 @@ function renderCategories(completedCategories: CategoryId[]) {
             buttonElement.classList.add('disabled')
         }
 
-        for (const child of buttonElement.children) {
-            child.addEventListener('click', () => {
-                renderPage('items', category)
-            })
-        }
+        buttonElement.addEventListener('click', () => {
+            renderPage('items', category)
+        })
     }
 }
 

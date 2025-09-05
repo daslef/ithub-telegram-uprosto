@@ -14,6 +14,9 @@ class CompaniesPDFPresenter(AbstractPresenter):
         with PDFBuilder() as pdf_builder:
             data = self._preformat_data(self._data)
 
+            pdf_builder.add_page()
+            pdf_builder.render_cover()
+
             for category, category_companies in data:
                 pdf_builder.add_page()
                 pdf_builder.render_title(

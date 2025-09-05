@@ -67,15 +67,8 @@ async def parse_data(message: types.Message):
             credentials = raw.get("credentials", {})
             save_puzzle_results(username, payload, credentials)
 
-            filename = f"{username}_brochure_{datetime.datetime.now().isoformat(timespec='minutes')}.pdf"
-            await message.answer_document(
-                types.BufferedInputFile(
-                    file=send_companies_brochure(username), filename=filename
-                )
-            )
-
             content = Text(
-                "В этом документе представлена ",
+                "Отправляем документ, где представлена ",
                 Bold("информация о заинтересовавших вас организациях"),
                 "! А если хотите принять участие в ",
                 Bold("розыгрыше призов"),
@@ -83,6 +76,13 @@ async def parse_data(message: types.Message):
             )
 
             await message.answer(**content.as_kwargs())
+
+            filename = f"{username}_brochure_{datetime.datetime.now().isoformat(timespec='minutes')}.pdf"
+            await message.answer_document(
+                types.BufferedInputFile(
+                    file=send_companies_brochure(username), filename=filename
+                )
+            )
 
         elif data_type == "lottery":
             save_lottery_results(username, payload)

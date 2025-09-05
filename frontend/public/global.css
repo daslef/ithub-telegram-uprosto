@@ -68,7 +68,7 @@ body {
     margin-top: 28px;
     text-align: center;
     color: var(--color-orange);
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .game-status {
@@ -162,8 +162,8 @@ body {
 }
 
 .lottery-container {
-    position: absolute;
-    top: 35%;
+    position: fixed;
+    top: 35vh;
     left: 0;
     display: flex;
     width: 100%;
@@ -342,10 +342,6 @@ body {
     stroke-linejoin: round;
 }
 
-.hidden {
-    display: none;
-}
-
 .map-page {
     position: fixed;
     inset: 0;
@@ -375,8 +371,8 @@ body {
 .map-select__buttons {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-top: 12px;
+    gap: 16px;
+    margin-top: 25px;
 }
 
 .map-select__btn {
@@ -436,4 +432,14 @@ body {
 .not_supported__text {
     font-size: 16px;
     line-height: 1.35;
+}
+
+.hidden {
+    display: none;
+}
+
+iframe #filters select,
+iframe #filters input {
+    font-size: 14px;
+    font-family: "Onest Regular", sans-serif;
 }

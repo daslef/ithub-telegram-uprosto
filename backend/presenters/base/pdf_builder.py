@@ -9,7 +9,8 @@ from fpdf import FPDF
 from .abc import AbstractBuilder
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
-LOGO_SVG = PROJECT_ROOT / "frontend/public/logo.svg"
+LOGO_SVG = PROJECT_ROOT / "frontend/public/logo.png"
+LOGO_FULL = PROJECT_ROOT / "frontend/public/logo_full.jpg"
 FONT_ONEST_REGULAR = PROJECT_ROOT / "frontend/public/fonts/Onest-Regular.ttf"
 FONT_ONEST_SEMIBOLD = PROJECT_ROOT / "frontend/public/fonts/Onest-SemiBold.ttf"
 FONT_DUDKA_BOLD = PROJECT_ROOT / "frontend/public/fonts/Dudka-Bold.ttf"
@@ -31,6 +32,8 @@ class PDFBuilder(FPDF, AbstractBuilder):
         super().__init__(orientation="P", unit="mm", format="A4")
         self.set_margins(left=16, top=22, right=16)
         self.set_auto_page_break(auto=True, margin=18)
+        self.set_page_background((244, 237, 243))
+        self._is_cover = True
         self._output_stream: Optional[BytesIO] = None
         self._fonts_ready = False
 
@@ -44,7 +47,7 @@ class PDFBuilder(FPDF, AbstractBuilder):
         return False
 
     def _configure_basics(self):
-        self.set_title("Просто учиться!")
+        self.set_title("Фестиваль Просто учиться")
         self.set_author("Просто учиться")
         try:
             self.set_text_shaping(True)
@@ -58,9 +61,13 @@ class PDFBuilder(FPDF, AbstractBuilder):
         if FONT_ONEST_REGULAR.exists():
             self.add_font("Onest", style="", fname=str(FONT_ONEST_REGULAR), uni=True)
             if FONT_ONEST_SEMIBOLD.exists():
-                self.add_font("Onest", style="b", fname=str(FONT_ONEST_SEMIBOLD), uni=True)
+                self.add_font(
+                    "Onest", style="b", fname=str(FONT_ONEST_SEMIBOLD), uni=True
+                )
             else:
-                self.add_font("Onest", style="b", fname=str(FONT_ONEST_REGULAR), uni=True)
+                self.add_font(
+                    "Onest", style="b", fname=str(FONT_ONEST_REGULAR), uni=True
+                )
             families.append("Onest")
 
         if FONT_DUDKA_BOLD.exists():
@@ -86,21 +93,35 @@ class PDFBuilder(FPDF, AbstractBuilder):
         assert self._fonts_ready
         self.set_font("Onest", style="b", size=size)
 
+    def render_cover(self):
+        self.image(
+            str(LOGO_FULL),
+            w=self.epw * 2 / 3,
+            x=self.epw / 4,
+            y=self.eph * 4 / 9,
+            keep_aspect_ratio=True,
+        )
+        self.set_page_background(None)
+
     def header(self):
+        if self._is_cover:
+            self._is_cover = False
+            return
+
         y0, x0 = 12, 16
 
         if LOGO_SVG.exists():
             try:
-                self.image(str(LOGO_SVG), x=x0, y=y0 - 1, w=14)
+                self.image(str(LOGO_SVG), x=x0, y=y0 - 1, w=24)
             except Exception:
                 pass
 
-        self.set_xy(x0 + 18, y0 - 1)
+        self.set_xy(x0 + 30, y0 - 1)
         self._set_body_font(9.5)
         self.set_text_color(*self._COLOR_SUBTLE)
         self.cell(0, 6, "Подборка организаций по вашим интересам", ln=1)
 
-        self._draw_doodles()
+        # self._draw_doodles()
 
         self.set_draw_color(*self._COLOR_DIVIDER)
         self.set_line_width(0.3)
@@ -165,6 +186,7 @@ class PDFBuilder(FPDF, AbstractBuilder):
         self.ln(1)
 
     def render_subheading(self, text: str):
+        self.ln(2)
         self._set_bold_font(16)
         self.set_text_color(*self._COLOR_PRIMARY)
         self.multi_cell(w=0, h=7, txt=text)
