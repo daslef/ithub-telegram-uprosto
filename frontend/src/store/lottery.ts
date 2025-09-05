@@ -2,6 +2,7 @@ import { createStore } from 'zustand/vanilla';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { getCloudStorageProvider } from '../storage';
+import { isDatetimePassed } from '../utils/time';
 import type { LotteryDatetime } from '../types'
 
 type LotteryState = {
@@ -13,13 +14,14 @@ type LotteryState = {
 
 interface LotteryActions {
     setDatetime: (datetime: LotteryDatetime) => void;
+    hasBeenPassed: () => boolean;
     clearAll: () => void;
     markAsSent: () => void;
 }
 
 export const useLotteryStore = createStore<LotteryState & LotteryActions>()(
     persist(
-        (set, _) => ({
+        (set, get) => ({
             isPending: false,
             hasBeenSent: false,
             date: null,
@@ -28,6 +30,14 @@ export const useLotteryStore = createStore<LotteryState & LotteryActions>()(
                 date,
                 time
             }),
+            hasBeenPassed: () => {
+                const date = get().date
+                const time = get().time
+                if (date !== null && time !== null) {
+                    return isDatetimePassed(date, time)
+                }
+                return false
+            },
             clearAll: () => set({
                 date: null,
                 time: null,

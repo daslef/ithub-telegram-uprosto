@@ -33,7 +33,6 @@ function renderEntry(item: CompanyInfo, checked = false) {
 
 export default function FormPage(categoryName: string) {
     function navigateBack() {
-        tg.BackButton.offClick(navigateBack)
         renderPage("categories")
     }
 
@@ -71,7 +70,6 @@ export default function FormPage(categoryName: string) {
             console.log(error)
         }
 
-        tg.MainButton.offClick(onSubmit)
         renderPage('categories')
     }
 
@@ -86,7 +84,6 @@ export default function FormPage(categoryName: string) {
 
     formElement.addEventListener('input', onInput)
 
-    tg.SecondaryButton.hide()
     tg.BackButton.onClick(navigateBack).show()
     tg.MainButton.setText("Отправить").onClick(onSubmit).hide()
 

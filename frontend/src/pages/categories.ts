@@ -2,7 +2,6 @@ import { renderPage } from '../router'
 import { categories } from '../storage'
 import { tg } from '../telegram-web-app';
 import { usePuzzleStore } from '../store/puzzle';
-import { useLotteryStore } from '../store/lottery';
 import { useCredentialsStore } from '../store/credentials';
 import { requestContact } from '../utils/promises';
 import type { CategoryId, PuzzleDTO } from '../types';
@@ -10,7 +9,7 @@ import type { CategoryId, PuzzleDTO } from '../types';
 
 function renderStatus(completedCount: number) {
     const statusElement = document.querySelector('.game-status > span')!
-    statusElement.innerHTML = `(заполнено: ${completedCount}/${categories.length})`
+    statusElement.innerHTML = completedCount.toString()
 }
 
 function renderCategories(completedCategories: CategoryId[]) {
@@ -25,30 +24,16 @@ function renderCategories(completedCategories: CategoryId[]) {
 
         for (const child of buttonElement.children) {
             child.addEventListener('click', () => {
-                cleanButtons()
                 renderPage('items', category)
             })
         }
     }
 }
 
-function cleanButtons() {
-    tg.MainButton.hide().disable().offClick(sendPuzzleData)
-    tg.SecondaryButton.hide().disable().offClick(navigateToLottery)
-}
-
-function navigateToLottery() {
-    cleanButtons()
-    renderPage("lottery")
-}
-
 async function sendPuzzleData() {
-    cleanButtons()
-
     try {
         const hasCredentialsSet = useCredentialsStore.getState().isSet()
         if (!hasCredentialsSet) {
-
             const contact = await requestContact('Подтвердите согласие на обработку персональных данных')
             useCredentialsStore.getState().setCredentials({
                 phone_number: contact.phone_number ?? "",
@@ -80,24 +65,12 @@ function renderButtons(completedCount: number) {
         text_color: '#ffffff',
         is_active: false,
         is_visible: false
-    })
+    }).onClick(sendPuzzleData)
 
-    tg.SecondaryButton.setParams({
-        text: lotteryHasBeenSent ? 'Изменить время розыгрыша' : 'Участвовать в розыгрыше',
-        color: '#9C8CD9',
-        text_color: '#ffffff',
-        is_active: false,
-        is_visible: false,
-        position: "bottom"
-    })
-
-    tg.BackButton.hide()
-    tg.MainButton.onClick(sendPuzzleData)
-    tg.SecondaryButton.onClick(navigateToLottery)
+    tg.BackButton.onClick(() => { renderPage('start') }).show()
 
     if (completedCount === categories.length) {
         tg.MainButton.enable().show()
-        tg.SecondaryButton.enable().show()
     }
 }
 
