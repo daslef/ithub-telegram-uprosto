@@ -437,3 +437,9 @@ body {
 .hidden {
     display: none;
 }
+
+iframe #filters select,
+iframe #filters input {
+    font-size: 14px;
+    font-family: "Onest Regular", sans-serif;
+}
