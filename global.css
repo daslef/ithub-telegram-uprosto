@@ -124,10 +124,10 @@ body {
     margin: 0 auto;
     width: min(100%, 420px);
     font-family: "Onest Regular";
-    min-height: 400px;
+    min-height: 240px;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: flex-start;
     align-items: center;
 }
 
