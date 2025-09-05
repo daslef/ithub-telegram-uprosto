@@ -162,8 +162,8 @@ body {
 }
 
 .lottery-container {
-    position: absolute;
-    top: 35%;
+    position: fixed;
+    top: 35vh;
     left: 0;
     display: flex;
     width: 100%;
