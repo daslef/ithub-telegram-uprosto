@@ -343,7 +343,7 @@ body {
 }
 
 .hidden {
-    visibility: hidden;
+    display: none;
 }
 
 #app:has(.map-page) {
