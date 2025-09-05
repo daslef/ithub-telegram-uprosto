@@ -33,7 +33,7 @@ async def start(message: types.Message):
         types.KeyboardButton(text="Открыть приложение", web_app=webAppInfo),
     )
 
-    if message.from_user.id in settings.admins:
+    if message.from_user.username in settings.admins:
         builder.row(
             types.KeyboardButton(text="Регистрации на розыгрыш"),
             types.KeyboardButton(text="Регистрации на розыгрыш (XLSX)"),
@@ -100,14 +100,15 @@ async def parse_data(message: types.Message):
 
 
 @dp.message(
-    (F.text == "Регистрации на розыгрыш") & (F.from_user.id.in_(settings.admins))
+    (F.text == "Регистрации на розыгрыш") & (F.from_user.username.in_(settings.admins))
 )
 async def show_report_lottery_message(message: types.Message):
     await message.answer(text=show_lottery_report(), parse_mode=ParseMode.HTML)
 
 
 @dp.message(
-    (F.text == "Регистрации на розыгрыш (XLSX)") & (F.from_user.id.in_(settings.admins))
+    (F.text == "Регистрации на розыгрыш (XLSX)")
+    & (F.from_user.username.in_(settings.admins))
 )
 async def send_report_lottery_message(message: types.Message):
     filename = f"lottery_{datetime.datetime.now().isoformat(timespec='minutes')}.xlsx"
@@ -118,7 +119,7 @@ async def send_report_lottery_message(message: types.Message):
 
 @dp.message(
     (F.text == "Пользовательские отклики (XLSX)")
-    & (F.from_user.id.in_(settings.admins))
+    & (F.from_user.username.in_(settings.admins))
 )
 async def send_users_answers_report_message(message: types.Message):
     puzzle_filename = (

@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     webapp_url: str
     debug_mode: bool = False
     db_path: str
-    admins: list[int]
+    admins: list[str]
 
     class Config:
         env_file = ".env"
