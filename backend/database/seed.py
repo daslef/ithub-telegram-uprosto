@@ -3,6 +3,7 @@ import json
 from peewee import IntegrityError
 from .models.company import CompanyCategory, Company, CompanyRecord
 from .models.lottery import LotterySlot, LotteryRecord
+from .models.comment import CommentRecord
 
 from .instance import database_instance
 
@@ -24,6 +25,15 @@ def seed_lottery():
 
     except IntegrityError:
         print("Slots data already exists")
+
+
+def seed_comments():
+    with database_instance:
+        database_instance.create_tables(
+            [
+                CommentRecord,
+            ]
+        )
 
 
 def seed_companies():
@@ -70,3 +80,4 @@ def seed_companies():
 
 seed_lottery()
 seed_companies()
+seed_comments()

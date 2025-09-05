@@ -3,6 +3,7 @@ from peewee import IntegrityError
 
 from .models.company import CompanyRecord
 from .models.lottery import LotteryRecord
+from .models.comment import CommentRecord
 
 
 def seed_lottery_records():
@@ -45,9 +46,13 @@ def test_grouped_lottery_records():
     return LotteryRecord.get_all()
 
 
-print(test_add_lottery_record("test-1", "2025-09-06", "15:50:00"))
-print(test_add_lottery_record("test-2", "2025-09-07", "13:50:00"))
-print(test_grouped_lottery_records())
+def test_comment_records():
+    return CommentRecord.get_all()
+
+
+# print(test_add_lottery_record("test-1", "2025-09-06", "15:50:00"))
+# print(test_add_lottery_record("test-2", "2025-09-07", "13:50:00"))
+# print(test_grouped_lottery_records())
 
 print(test_add_company_record("test-1", "category_1_item_1"))
 print(test_add_company_record("test-1", "category_1_item_2"))
@@ -55,3 +60,4 @@ print(test_add_company_record("test-1", "category_2_item_3"))
 print(test_add_company_record("test-2", "category_3_item_4"))
 print(test_company_records_by_username("test-2"))
 print(test_all_company_records())
+print(test_comment_records())

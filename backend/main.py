@@ -19,7 +19,7 @@ from use_cases.companies_report import (
     send_companies_brochure,
 )
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARN)
 
 bot = Bot(settings.bot_token)
 dp = Dispatcher()
@@ -121,9 +121,21 @@ async def send_report_lottery_message(message: types.Message):
     & (F.from_user.id.in_(settings.admins))
 )
 async def send_users_answers_report_message(message: types.Message):
-    filename = f"puzzle_{datetime.datetime.now().isoformat(timespec='minutes')}.xlsx"
+    puzzle_filename = (
+        f"puzzle_{datetime.datetime.now().isoformat(timespec='minutes')}.xlsx"
+    )
+    comments_filename = (
+        f"comments_{datetime.datetime.now().isoformat(timespec='minutes')}.xlsx"
+    )
     await message.answer_document(
-        types.BufferedInputFile(file=send_users_answers_report(), filename=filename)
+        types.BufferedInputFile(
+            file=send_users_answers_report("companies"), filename=puzzle_filename
+        )
+    )
+    await message.answer_document(
+        types.BufferedInputFile(
+            file=send_users_answers_report("comments"), filename=comments_filename
+        )
     )
 
 
