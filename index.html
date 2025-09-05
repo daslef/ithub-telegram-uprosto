@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="./global.css" />
     <link rel="shortcut icon" href="./favicon.svg" type="image/svg" />
     <title>Просто учиться</title>
-  <script type="module" crossorigin src="./assets/index-BdyBRn_y.js"></script>
+  <script type="module" crossorigin src="./assets/index-W2VSUSw-.js"></script>
 </head>
 
 <body>
@@ -48,7 +48,7 @@
                 подарков, который состояться в 13:50, 15:50 и 17:50 в каждый из дней
                 Фестиваля.
             </p>
-            <button id="clear-btn" class="btn clear-btn">Сбросить ключи</button>
+            <button id="clear-btn" class="btn clear-btn hidden">Сбросить ключи</button>
         </section>
     </template>
 
@@ -57,7 +57,6 @@
             <img class="logo_heading__logo" src="./logo.png" alt="логотип просто учиться" />
         </figure>
 
-        <!-- <h1 class="game-heading">Собери свой образовательный пазл</h1> -->
         <h3 class="game-status">
             Выберите интересующие категории&nbsp;<br />(заполнено
             <span>&nbsp;</span>/9)
@@ -311,9 +310,32 @@
     </template>
 
     <template id="map">
-        <section class="map-page">
-            <iframe class="map-iframe" src="https://prosto.education/info/map/map.html" title="Интерактивная карта"
-                loading="lazy" referrerpolicy="no-referrer-when-downgrade" allow="fullscreen"></iframe>
+        <section class="map-select">
+            <figure class="logo_heading">
+                <img class="logo_heading__logo" src="./logo.svg" alt="логотип просто учиться" />
+                <figcaption class="logo_heading__sub">
+                    фестиваль детского образования
+                </figcaption>
+            </figure>
+
+            <h2 class="game-heading">Выберите карту фестиваля</h2>
+
+            <div class="map-select__buttons">
+                <button id="btn-map-609" class="btn map-select__btn map-select__btn--lavender"
+                    data-url="https://prosto.education/info/map/609/map.html">
+                    Карта на 6 сентября
+                </button>
+
+                <button id="btn-map-709" class="btn map-select__btn map-select__btn--orange"
+                    data-url="https://prosto.education/info/map/709/map.html">
+                    Карта на 7 сентября
+                </button>
+            </div>
+        </section>
+
+        <section class="map-page hidden">
+            <iframe class="map-iframe" src="" title="Интерактивная карта" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade" allow="fullscreen" allowfullscreen></iframe>
         </section>
     </template>
 

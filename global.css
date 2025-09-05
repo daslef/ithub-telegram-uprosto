@@ -346,11 +346,6 @@ body {
     display: none;
 }
 
-#app:has(.map-page) {
-    padding: 0;
-    min-height: 0;
-}
-
 .map-page {
     position: fixed;
     inset: 0;
@@ -369,6 +364,44 @@ body {
     height: 100%;
     border: 0;
     display: block;
+}
+
+.map-select {
+    width: min(100%, 420px);
+    margin: 0 auto;
+    padding: 24px 20px 28px;
+}
+
+.map-select__buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.map-select__btn {
+    display: inline-block;
+    width: 100%;
+    padding: 14px 16px;
+    border: 0;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: "Onest SemiBold", sans-serif;
+    color: #fff;
+    cursor: pointer;
+}
+
+.map-select__btn--lavender {
+    background: var(--color-lavender);
+}
+
+.map-select__btn--orange {
+    background: var(--color-orange);
+}
+
+#app:has(.map-page) {
+    padding: 0;
+    min-height: 0;
 }
 
 .clear-btn {
