@@ -49,9 +49,9 @@ def seed_companies():
     with database_instance:
         database_instance.create_tables(
             [
-                CompanyCategory,
+                # CompanyCategory,
                 Company,
-                CompanyRecord,
+                # CompanyRecord,
             ]
         )
 
@@ -59,11 +59,14 @@ def seed_companies():
 
     try:
         for category in data:
-            row_category = CompanyCategory.create(
-                id=category["id"], name=category["category"]
-            )
+            # row_category = CompanyCategory.create(
+            #     id=category["id"], name=category["category"]
+            # )
+            row_category = CompanyCategory.get(CompanyCategory.id == category["id"])
 
             for item in category["items"]:
+                if Company.get_or_none(Company.id == item["id"]):
+                    continue
                 Company.create(
                     id=item["id"],
                     name=item["title"],
@@ -78,6 +81,6 @@ def seed_companies():
         print(e)
 
 
-seed_lottery()
+# seed_lottery()
 seed_companies()
-seed_comments()
+# seed_comments()
